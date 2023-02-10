@@ -6,7 +6,8 @@ This repo contains code that will generate artifacts which can be consumed by cl
 * [Set up an environment](#set-up-an-environment)
 * [Project Structure](#project-structure)
 * [VoltSDK Android library generation](#voltsdk-android-library-generation)
-* [Create VoltSDK instance and create app by passing users details](#create-voltsdk-instance-and-create-app-by-passing-users-details)
+* [Invoke VoltSDK](#invoke-voltsdk)
+* [Get VoltSDK CreateApp response](#get-voltsdk-createapp-response)
 ### Set up an environment
 
 * Download Latest Android Studio and open this cloned repo as a new project.
