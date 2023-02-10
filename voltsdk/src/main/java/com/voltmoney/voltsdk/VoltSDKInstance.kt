@@ -36,7 +36,7 @@ class VoltSDKInstance(
             "&primaryColor=$primaryColor" +
             "&platform=$partnerPlatform"
 
-    fun generateToken() {
+   /* fun generateToken() {
         //write logic for generating token using retrofit
         voltAPI.getAuthToken(AuthData(app_key,app_secret)).enqueue(object:Callback<AuthResponse>{
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
@@ -57,32 +57,53 @@ class VoltSDKInstance(
                     Log.d("ResVolt",t.localizedMessage)
             }
         })
-    }
+    }*/
 
     fun startApplication(dob:String,email:String,mobileNumber: Long,pan:String){
-        //write logic for creating application and upon success response from api update webView_url and open VoltWebViewActivity
         val createApplicationData = CreateApplicationData(CustomerDetails(dob,email, mobileNumber,pan))
-        voltAPI.createApplication(createApplicationData, "Bearer $authToken",partnerPlatform).enqueue(object:Callback<CreateAppResponse>{
-            override fun onResponse(
-                call: Call<CreateAppResponse>,
-                response: Response<CreateAppResponse>
-            ) {
-                if (response.body() != null) {
-                        val createAppResponse = response.body() as CreateAppResponse
-                        Log.d("ResVolt", response.code().toString())
-                        (context as VoltAPIResponse).createAppAPIResponse(createAppResponse,null)
-                }else{
+        voltAPI.getAuthToken(AuthData(app_key,app_secret)).enqueue(object:Callback<CreateAppResponse>{
+            override fun onResponse(call: Call<CreateAppResponse>, response: Response<CreateAppResponse>) {
+                if (response.body() !=null && response.code() ==200){
+                    authToken = response.body()!!.auth_token.toString()
+                   /* val createAppResponse = response.body() as CreateAppResponse
+                    Log.d("ResVolt", createAppResponse.auth_token!!)
+                    (context as VoltAPIResponse).createAppAPIResponse(createAppResponse,null)*/
+                    voltAPI.createApplication(createApplicationData, "Bearer $authToken",partnerPlatform).enqueue(object:Callback<CreateAppResponse>{
+                        override fun onResponse(
+                            call: Call<CreateAppResponse>,
+                            response: Response<CreateAppResponse>
+                        ) {
+                            if (response.body() != null) {
+                                val createAppResponse = response.body() as CreateAppResponse
+                                Log.d("ResVolt", response.code().toString())
+                                (context as VoltAPIResponse).createAppAPIResponse(createAppResponse,null)
+                            }else{
+                                if (response.errorBody() !=null) {
+                                    val jObjError = JSONObject(response.errorBody()!!.string())
+                                    val errorRes = jObjError.getString("message")
+                                    (context as VoltAPIResponse).createAppAPIResponse(null,errorRes)
+                                }
+                            }
+                        }
+                        override fun onFailure(call: Call<CreateAppResponse>, t: Throwable) {
+                            Log.d("ResVolt", t.toString())
+                        }
+                    })
+                }else {
                     if (response.errorBody() !=null) {
                         val jObjError = JSONObject(response.errorBody()!!.string())
                         val errorRes = jObjError.getString("message")
                         (context as VoltAPIResponse).createAppAPIResponse(null,errorRes)
+                    }else{
+                        (context as VoltAPIResponse).createAppAPIResponse(null,"Invalid Credentials")
                     }
                 }
             }
             override fun onFailure(call: Call<CreateAppResponse>, t: Throwable) {
-                Log.d("ResVolt", t.toString())
+                Log.d("ResVolt",t.localizedMessage)
             }
         })
+        //write logic for creating application and upon success response from api update webView_url and open VoltWebViewActivity
 
     }
     fun invokeVoltSdk(mobileNumber: Long) {
