@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.voltmoney.voltmoneySdkSample.databinding.ActivityMainBinding
 import com.voltmoney.voltsdk.VoltAPIResponse
 import com.voltmoney.voltsdk.VoltSDKInstance
-import com.voltmoney.voltsdk.models.AuthResponse
 import com.voltmoney.voltsdk.models.CreateAppResponse
 import java.io.BufferedInputStream
 import java.io.InputStream
@@ -23,7 +22,6 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
     private lateinit var createAppButton:Button
     private lateinit var invokeVoltSdk:Button
     private var voltInstance:VoltSDKInstance?=null
-    private var authResponse: AuthResponse?=null
     private var createAppResponse: CreateAppResponse?=null
     private var authToken:String?=null
     lateinit var binding: ActivityMainBinding
@@ -44,24 +42,27 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
             )
 
         }
-        binding.btGetAuthToken.setOnClickListener {
+       /* binding.btGetAuthToken.setOnClickListener {
             voltInstance?.generateToken()
 
-        }
+        }*/
 
         binding.btCreateApp.setOnClickListener {
-            voltInstance.let {
-                if (authToken !=null) {
-                    it?.startApplication(
-                        binding.etDob.text.toString(),
-                        binding.etEmail.text.toString(),
-                        binding.etMobile.text.toString().toLong(),
-                        binding.etPan.text.toString()
-                    )
-                }
+            if (voltInstance == null){
+                Toast.makeText(this, "Please create VoltInstance first", Toast.LENGTH_SHORT).show()
             }
+            voltInstance?.startApplication(
+                binding.etDob.text.toString(),
+                binding.etEmail.text.toString(),
+                binding.etMobile.text.toString().toLong(),
+                binding.etPan.text.toString()
+            )
         }
+
         binding.btInvokeVoltSdk.setOnClickListener {
+            if (voltInstance == null){
+                Toast.makeText(this, "Please create VoltInstance first", Toast.LENGTH_SHORT).show()
+            }
             voltInstance.let {
                     it?.invokeVoltSdk(binding.etMobile.text.toString().toLong())
             }
@@ -99,22 +100,15 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
             Toast.makeText(this, "User deleted :"+ binding.etMobile.text.toString(), Toast.LENGTH_SHORT).show()
         }
     }
-
-    override fun authAPIResponse(authResponse: AuthResponse?, errorMsg: String?) {
-        if (authResponse !=null){
-            this.authResponse = authResponse
-            authToken = this.authResponse!!.auth_token
-            Toast.makeText(this, authToken, Toast.LENGTH_SHORT).show()
-        }else{
-            Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
-        }
-
-    }
-
     override fun createAppAPIResponse(createAppResponse: CreateAppResponse?, errorMsg: String?) {
-        if (createAppResponse!=null){
-            this.createAppResponse =createAppResponse
-            Toast.makeText(this, this.createAppResponse?.customerAccountId.toString(), Toast.LENGTH_SHORT).show()
+
+        this.createAppResponse =createAppResponse
+        if (createAppResponse?.customerAccountId !=null) {
+                Toast.makeText(
+                    this,
+                    "Customer Id is: "+this.createAppResponse?.customerAccountId.toString(),
+                    Toast.LENGTH_SHORT
+                ).show()
         }else{
             Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
         }

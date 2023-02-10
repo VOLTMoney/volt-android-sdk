@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="CreateVoltSdkInstance"
-            app:layout_constraintBottom_toTopOf="@+id/bt_getAuthToken"
+            app:layout_constraintBottom_toTopOf="@+id/bt_t"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/guideline2" />
@@ -34,10 +34,10 @@
             app:layout_constraintTop_toBottomOf="@+id/guideline4" />
 
         <Button
-            android:id="@+id/bt_getAuthToken"
+            android:id="@+id/bt_t"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Get Auth Token"
             app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintEnd_toEndOf="@+id/bt_volt"
             app:layout_constraintHorizontal_bias="0.5"
