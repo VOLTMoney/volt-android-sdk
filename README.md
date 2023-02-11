@@ -84,13 +84,13 @@ voltInstance.invokeVoltSdk(mobileNumber)
 ### Get VoltSDK CreateApp response
 * If you want to know the response of the create user api call, all you have to do is add the interface  `VoltAPIResponse` to calling activity and implement the `VoltAPIResponse`'s `createAppAPIResponse()` method.
 ```
-override fun createAppAPIResponse(createAppResponse: CreateAppResponse?, errorMsg: String?) {
+override fun createAppAPIResponse(preCreateAppResponse: CreateAppResponse?, errorMsg: String?) {
 
-        this.createAppResponse =createAppResponse
-        if (createAppResponse?.customerAccountId !=null) {
+        this.preCreateAppResponse =preCreateAppResponse
+        if (preCreateAppResponse?.customerAccountId !=null) {
                 Toast.makeText(
                     this,
-                    "Customer Id is: "+this.createAppResponse?.customerAccountId.toString(),
+                    "Customer Id is: "+this.preCreateAppResponse?.customerAccountId.toString(),
                     Toast.LENGTH_SHORT
                 ).show()
         }else{
@@ -98,7 +98,7 @@ override fun createAppAPIResponse(createAppResponse: CreateAppResponse?, errorMs
         }
     }
 ```
-Here createAppResponse dataclass is : 
+Here preCreateAppResponse dataclass is : 
 ```
 data class CreateAppResponse(
     val auth_token: String?,

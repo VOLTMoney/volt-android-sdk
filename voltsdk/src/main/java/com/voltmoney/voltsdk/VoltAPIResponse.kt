@@ -1,7 +1,7 @@
 package com.voltmoney.voltsdk
 
-import com.voltmoney.voltsdk.models.CreateAppResponse
+import com.voltmoney.voltsdk.models.PreCreateAppResponse
 
 interface VoltAPIResponse {
-    fun createAppAPIResponse(createAppResponse: CreateAppResponse?, errorMsg: String?)
+    fun preCreateAppAPIResponse(preCreateAppResponse: PreCreateAppResponse?, errorMsg: String?)
 }

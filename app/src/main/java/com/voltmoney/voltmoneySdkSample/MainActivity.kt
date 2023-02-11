@@ -1,17 +1,14 @@
 package com.voltmoney.voltmoneySdkSample
 
 import android.os.Bundle
-import android.provider.ContactsContract.CommonDataKinds.Website.URL
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.voltmoney.voltmoneySdkSample.databinding.ActivityMainBinding
 import com.voltmoney.voltsdk.VoltAPIResponse
-import com.voltmoney.voltsdk.VoltSDKInstance
-import com.voltmoney.voltsdk.models.CreateAppResponse
-import java.io.BufferedInputStream
-import java.io.InputStream
+import com.voltmoney.voltsdk.VoltSDKContainer
+import com.voltmoney.voltsdk.models.PreCreateAppResponse
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -21,8 +18,8 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
     private lateinit var authButton: Button
     private lateinit var createAppButton:Button
     private lateinit var invokeVoltSdk:Button
-    private var voltInstance:VoltSDKInstance?=null
-    private var createAppResponse: CreateAppResponse?=null
+    private var voltSDKContainer:VoltSDKContainer?=null
+    private var preCreateAppResponse: PreCreateAppResponse?=null
     private var authToken:String?=null
     lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +29,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
         binding.btVolt.setOnClickListener {
            // var intent:Intent = Intent(this,VoltWebViewActivity::class.java)
             //startActivity(Intent(this,VoltWebViewActivity::class.java))
-            voltInstance = VoltSDKInstance(this,
+            voltSDKContainer = VoltSDKContainer(this,
                 "volt-sdk-staging@voltmoney.in",
                 "e10b6eaf2e334d1b955434e25fcfe2d8",
                 binding.etRef.text.toString(),
@@ -42,29 +39,28 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
             )
 
         }
-       /* binding.btGetAuthToken.setOnClickListener {
-            voltInstance?.generateToken()
-
-        }*/
-
         binding.btCreateApp.setOnClickListener {
-            if (voltInstance == null){
+            if (voltSDKContainer == null){
                 Toast.makeText(this, "Please create VoltInstance first", Toast.LENGTH_SHORT).show()
             }
-            voltInstance?.startApplication(
-                binding.etDob.text.toString(),
-                binding.etEmail.text.toString(),
-                binding.etMobile.text.toString().toLong(),
-                binding.etPan.text.toString()
-            )
+            if(binding.etMobile.text.toString().length <10){
+                Toast.makeText(this, "Please input correct mobile number", Toast.LENGTH_SHORT).show()
+            }else {
+                voltSDKContainer?.preCreateApplication(
+                    binding.etDob.text.toString(),
+                    binding.etEmail.text.toString(),
+                    binding.etMobile.text.toString().toLong(),
+                    binding.etPan.text.toString()
+                )
+            }
         }
 
         binding.btInvokeVoltSdk.setOnClickListener {
-            if (voltInstance == null){
+            if (voltSDKContainer == null){
                 Toast.makeText(this, "Please create VoltInstance first", Toast.LENGTH_SHORT).show()
             }
-            voltInstance.let {
-                    it?.invokeVoltSdk(binding.etMobile.text.toString().toLong())
+            voltSDKContainer.let {
+                    it?.initVoltSdk(binding.etMobile.text.toString().toLong())
             }
         }
         binding.btDeleteUser.setOnClickListener {
@@ -76,13 +72,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                     try {
                         // setting the  Request Method Type
                         urlConnection.setRequestMethod("GET");
-                        // adding the headers for request
-                       // urlConnection.setRequestProperty("Content-Type", "application/json");
-                        //to tell the connection object that we will be wrting some data on the server and then will fetch the output result
-                       // urlConnection.setDoOutput(true);
-                        // this is used for just in case we don't know about the data size associated with our request
                         urlConnection.setChunkedStreamingMode(0);
-
                         // to log the response code of your request
                         Log.d(
                             "ApplicationConstant.TAG", urlConnection.responseCode.toString())
@@ -100,13 +90,13 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
             Toast.makeText(this, "User deleted :"+ binding.etMobile.text.toString(), Toast.LENGTH_SHORT).show()
         }
     }
-    override fun createAppAPIResponse(createAppResponse: CreateAppResponse?, errorMsg: String?) {
+    override fun preCreateAppAPIResponse(preCreateAppResponse: PreCreateAppResponse?, errorMsg: String?) {
 
-        this.createAppResponse =createAppResponse
-        if (createAppResponse?.customerAccountId !=null) {
+        this.preCreateAppResponse =preCreateAppResponse
+        if (preCreateAppResponse?.customerAccountId !=null) {
                 Toast.makeText(
                     this,
-                    "Customer Id is: "+this.createAppResponse?.customerAccountId.toString(),
+                    "Customer Id is: "+this.preCreateAppResponse?.customerAccountId.toString(),
                     Toast.LENGTH_SHORT
                 ).show()
         }else{

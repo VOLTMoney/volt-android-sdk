@@ -1,6 +1,6 @@
 package com.voltmoney.voltsdk.models
 
-data class CreateAppResponse(
+data class PreCreateAppResponse(
     val auth_token: String?,
     val customerAccountId: String?,
     val customerCreditApplicationId: String?,
