@@ -1,17 +1,18 @@
-# VoltMoney Android SDK
+# VoltMoney Android SDK - Example App.
 
-This repo contains code that will generate artifacts which can be consumed by client android mobile apps
+This repo contains a sample andriod app, which consumes the Volt Money andriod SDK (published over jitpack). This code can be used as a reference code to integrate Volt Money SDK in your andriod app.
 
 ## Contents
 * [Set up an environment](#set-up-an-environment)
-* [Project Structure](#project-structure)
-* [VoltSDK Android library generation](#voltsdk-android-library-generation)
-* [Invoke VoltSDK](#invoke-voltsdk)
-* [Get VoltSDK CreateApp response](#get-voltsdk-createapp-response)
-### Set up an environment
+* [Create an instance of VoltSDK](#create-voltsdk-instance)
+* [Pre-create customer application](#precreate-application)
+* [Init Volt Money Journey](#init-volt-money-journey)
+
+## 1. Set up an environment
 
 * Download Latest Android Studio and open this cloned repo as a new project.
-* This sdk is published on jitpack, follow below steps to get it in your project: 
+* This sdk is published on jitpack, follow below steps to get it in your project:
+
 Step 1. Add it in your root build.gradle at the end of repositories:
 ```
 allprojects {
@@ -21,76 +22,67 @@ allprojects {
 		}
 	}
 ```
-Step 2. Add the dependency
+Step 2. Add the dependency for VOLT SDK.
 ```
 implementation 'com.github.VOLTMoney:volt-android-sdk:1.0'
 
 ```
-### Project Structure
-* This sample project contains two module
-* voltsdk  -> This the module which contains aar(sdk) code base, if current open repo is volt-android-sdk-example then you wont see this module since an aar file has already been created and placed in there in libs folder of app module.
-* app -> This dir contain volt sample app code
 
-### VoltSDK Android library generation
+## 2. Create an instance of VoltSDK
 
-* In order to generate aar lib for android we need to build the project from root using below command
-  module:
-  Note-: if you are in volt-android-sdk-example then you wont need this step as aar is already been generated and placed in libs dir of app module
-```
-  ./gradlw clean build
-```
-After successful run of above command the aar and apk(VoltMoneySample) will be generated on below location:
+The first and mandatory step to integrate volt sdk is to create an instance of VoltSDKContainer class. The constructor to the class takes in configuration parameters which would be used while rendering content, these are:
 
-```
-   volt-release.aar -> voltsdk/build/outputs/aar/volt-release.aar
-   app-debug.apk -> app/build/outputs/apk/debug/app-debug.apk
-```
+1. **app_key (mandatory)**: Application's private key provided by the Volt Money team. If you don't have the key please contact the team at support@voltmoney.in.
+2. **app_secret (mandatory)**: Application's private hash key provided by the Volt Money team. If you don't have the key please contact the team at support@voltmoney.in.
+3. **partner_platform (mandatory)**: partner_platform, partner platform is the name/id provided to you by the Volt Money team to identify the SDK user. This is a mandatory field and will be passed as header in all API calls. If you don't have this 'id' please reach out to volt team @ support@voltmoney.in
+4. **primary_color(optional)** : Primary color, hex code of the color to be used as primary color for Volt Money sdk. The UI will get automatically customized to use this color as primary color (ex. all CTA, Icons etc.)
+5. **secondary_color(optional)** : Secondary color, hex code of the color to be used as secondary color for Volt Money sdk. The UI will get automatically customized to use this color. ex. all svgs, progress bar etc.)
+6. **ref (optional)**: Ref, is short for referral code, referral code can be specific to partner/platform based on the use-case. If provided the user signing up would be associated with the partner/platform.
 
-**Note** - As `aar` file doesn't include dependency from shared module, while create a new android
-project and adding this `aar` as lib, don't forget to add all dependency from from android section
-of common build.gradle.
+VoltSDKContainer instance can be created as follows:
 
-In this case we need to include below dependencies in project  `build.gradle` file :
-
-```
-    implementation files('libs/voltsdk-release.aar')
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'androidx.browser:browser:1.5.0-alpha02'
-```
-### Invoke VoltSDK
-* In order to open voltSDK client must have to create Volt SDK instance by passing certain value(see below):
   ```
-  var voltInstance = VoltSDKInstance(contex,
+  var voltSDKContainer = VoltSDKContainer(contex,
                 "app_key",
                 "app_secret",
-                "ref",
+                "partner_platform",
                 "primary_color",
                 "secondary_color",
-               "partner_platform " )
+                "ref")
   ```
-After creating voltsdk instance there are below two way by which VoltMoney app can be invoke
-1. Invoke VoltSDK by passing user info(create app fun call)
-```
-voltInstance.startApplication(dob,email,mobileNumber,pan)
-voltInstance.invokeVoltSdk(mobileNumber)
+
+## 3. Pre-create customer application (Optional)
+
+Most of the applications which are consuming Volt Money SDK would already have customer details like mobile, phone, email and date of birth, which form the first 3 steps of the loan application process. We provide a way to simplify the user experience by pre-creating the application, this will skip the first 3 steps and will take the customers directly to the portfolio fetch steps. This is based on the  APIs provided by  Volt Money  to partners (documented here: https://volt-docs.readme.io/reference/createcreditapplicationusingpost). Hence the VOLTSDKContainer, provides a simple function which takes care of calling the API.
+
+***Please note:*** you only need to call this API once for a customer, in case of duplicate API call it will throw an exception saying application is already created.
+
+The api takes in the 4 customer details :
+
+1. **PAN** : Customer's PAN number
+2. **Mobile Number** : Customer's mobile number.
+3. **email**: Customer's email address.
+4. **dob**: Customer's date of birth.
+
 
 ```
-2. Invoke VoltSDK without creating user
-```
-voltInstance.invokeVoltSdk(mobileNumber)
+// API to pre-create the application. 
+voltSDKContainer.startApplication(pan, mobile_number, email_address, date_of_birth);
 ```
 
-### Get VoltSDK CreateApp response
-* If you want to know the response of the create user api call, all you have to do is add the interface  `VoltAPIResponse` to calling activity and implement the `VoltAPIResponse`'s `createAppAPIResponse()` method.
+The API will respond with standard http response statuses like 200 for success and 4xx for bad requests/auth failures etc.
+
+* If you want to know the response of the create user api call, all you have to do is add the interface  `VoltAPIResponse` to calling activity and implement the `VoltAPIResponse`'s `preCreateAppAPIResponse()` method.
 ```
-override fun createAppAPIResponse(preCreateAppResponse: CreateAppResponse?, errorMsg: String?) {
+// Sample Implementation where we use preCreateAppResponse to create a toast based on API response. 
+
+override fun preCreateAppAPIResponse(preCreateAppResponse: PreCreateAppResponse?, errorMsg: String?) {
 
         this.preCreateAppResponse =preCreateAppResponse
         if (preCreateAppResponse?.customerAccountId !=null) {
                 Toast.makeText(
                     this,
-                    "Customer Id is: "+this.preCreateAppResponse?.customerAccountId.toString(),
+                    "Customer Id is: "+this.createAppResponse?.customerAccountId.toString(),
                     Toast.LENGTH_SHORT
                 ).show()
         }else{
@@ -98,10 +90,9 @@ override fun createAppAPIResponse(preCreateAppResponse: CreateAppResponse?, erro
         }
     }
 ```
-Here preCreateAppResponse dataclass is : 
+Here createAppResponse dataclass is :
 ```
 data class CreateAppResponse(
-    val auth_token: String?,
     val customerAccountId: String?,
     val customerCreditApplicationId: String?,
     val message: String?,
@@ -109,5 +100,18 @@ data class CreateAppResponse(
     val violations: String?
 )
 ```
-Note: auth_token will be null as we are not passing auth_token to client
 
+
+## 4. Init Volt Money Journey.
+
+Initialize/Resume customer journey by calling this API. The same API will be called every time customer want to open up the volt journey/dashboard, which step or state customer will be shown will be decided by Volt Money backend services, which manage the customer state hence the client app would not have to do it. You can simply call this API everytime the customer visit's VOLT SDK entry point, this API will open up VOLT Money's customized UI based on the parameters passed during the setup of sdk instance.
+
+The API takes one optional parameter as input :
+
+1. **Mobile Number** : Customer's mobile number. If passed it would autofill the mobile number in the mobile number text box on the login screen.
+
+
+```
+voltSDKContainer.initVoltSDK(mobileNumber)
+```
+ 
