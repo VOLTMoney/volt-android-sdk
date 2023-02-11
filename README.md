@@ -67,7 +67,7 @@ The api takes in the 4 customer details :
 
 ```
 // API to pre-create the application. 
-voltSDKContainer.startApplication(pan, mobile_number, email_address, date_of_birth);
+voltSDKContainer.preCreateApplication(pan, mobile_number, email_address, date_of_birth);
 ```
 
 The API will respond with standard http response statuses like 200 for success and 4xx for bad requests/auth failures etc.

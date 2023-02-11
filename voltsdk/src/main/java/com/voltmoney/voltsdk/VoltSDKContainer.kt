@@ -15,10 +15,10 @@ class VoltSDKContainer(
     private val context: Context,
     private val app_key: String,
     private val app_secret: String,
-    private val ref: String?,
-    private val primaryColor: String?,
-    private val secondaryColor: String?,
-    private val partnerPlatform: String
+    private val partner_platform: String,
+    private val primary_color: String?,
+    private val secondary_color: String?,
+    private val ref: String?
 ) {
     private var authToken:String?=null
     private var voltAPI: VoltAPI
@@ -31,8 +31,8 @@ class VoltSDKContainer(
     }
     var webView_url:String = "$BASE_URL?" +
             "ref=$ref" +
-            "&primaryColor=$primaryColor" +
-            "&platform=$partnerPlatform"
+            "&primaryColor=$primary_color" +
+            "&platform=$partner_platform"
     fun preCreateApplication(dob:String,email:String,mobileNumber: Long,pan:String){
         val createApplicationData = CreateApplicationData(CustomerDetails(dob,email, mobileNumber,pan))
         voltAPI.getAuthToken(AuthData(app_key,app_secret)).enqueue(object:Callback<PreCreateAppResponse>{
@@ -42,7 +42,7 @@ class VoltSDKContainer(
                    /* val createAppResponse = response.body() as PreCreateAppResponse
                     Log.d("ResVolt", createAppResponse.auth_token!!)
                     (context as VoltAPIResponse).createAppAPIResponse(createAppResponse,null)*/
-                    voltAPI.createApplication(createApplicationData, "Bearer $authToken",partnerPlatform).enqueue(object:Callback<PreCreateAppResponse>{
+                    voltAPI.createApplication(createApplicationData, "Bearer $authToken",partner_platform).enqueue(object:Callback<PreCreateAppResponse>{
                         override fun onResponse(
                             call: Call<PreCreateAppResponse>,
                             response: Response<PreCreateAppResponse>
@@ -85,7 +85,7 @@ class VoltSDKContainer(
         }
         val intent = Intent(context, VoltWebViewActivity::class.java)
         intent.putExtra("webViewUrl",webView_url)
-        intent.putExtra("primaryColor",primaryColor)
+        intent.putExtra("primaryColor",primary_color)
         startActivity(context,intent,null)
     }
 }

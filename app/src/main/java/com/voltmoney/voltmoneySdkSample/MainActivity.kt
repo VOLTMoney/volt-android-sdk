@@ -29,10 +29,10 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                             VoltSDKContainer(this,
                                 "volt-sdk-staging@voltmoney.in",
                                 "e10b6eaf2e334d1b955434e25fcfe2d8",
-                                binding.etRef.text.toString(),
+                                it1,
                                 it,
                                 null,
-                                it1
+                                binding.etRef.text.toString(),
                             )
                         }else{
                             Toast.makeText(this, "Please enter correct Platform", Toast.LENGTH_SHORT).show()
@@ -76,30 +76,42 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
             }
         }
         binding.btDeleteUser.setOnClickListener {
-            val thread:Thread = Thread(object : Runnable{
-                override fun run() {
-                    val url: URL =
-                        URL("https://api.staging.voltmoney.in/api/client/auth/test/delete/+91" + binding.etMobile.text.toString())
-                    val urlConnection: HttpURLConnection = url.openConnection() as HttpURLConnection
-                    try {
-                        // setting the  Request Method Type
-                        urlConnection.setRequestMethod("GET");
-                        urlConnection.setChunkedStreamingMode(0);
-                        // to log the response code of your request
-                        Log.d(
-                            "ApplicationConstant.TAG", urlConnection.responseCode.toString())
-                        // to log the response message from your server after you have tried the request.
-                        Log.d(
-                            "ApplicationConstant.TAG", urlConnection.responseMessage.toString())
+            if (binding.etMobile.text.toString().length < 10) {
+                Toast.makeText(this, "Please input correct mobile number", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                val thread: Thread = Thread(object : Runnable {
+                    override fun run() {
+                        val url: URL =
+                            URL("https://api.staging.voltmoney.in/api/client/auth/test/delete/+91" + binding.etMobile.text.toString())
+                        val urlConnection: HttpURLConnection =
+                            url.openConnection() as HttpURLConnection
+                        try {
+                            // setting the  Request Method Type
+                            urlConnection.setRequestMethod("GET");
+                            urlConnection.setChunkedStreamingMode(0);
+                            // to log the response code of your request
+                            Log.d(
+                                "ApplicationConstant.TAG", urlConnection.responseCode.toString()
+                            )
+                            // to log the response message from your server after you have tried the request.
+                            Log.d(
+                                "ApplicationConstant.TAG", urlConnection.responseMessage.toString()
+                            )
 
-                    } finally {
-                        // this is done so that there are no open connections left when this task is going to complete
-                        urlConnection.disconnect();
+                        } finally {
+                            // this is done so that there are no open connections left when this task is going to complete
+                            urlConnection.disconnect();
+                        }
                     }
-                }
-            })
-            thread.start()
-            Toast.makeText(this, "User deleted :"+ binding.etMobile.text.toString(), Toast.LENGTH_SHORT).show()
+                })
+                thread.start()
+                Toast.makeText(
+                    this,
+                    "User deleted :" + binding.etMobile.text.toString(),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
     override fun preCreateAppAPIResponse(preCreateAppResponse: PreCreateAppResponse?, errorMsg: String?) {
