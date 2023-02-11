@@ -92,7 +92,7 @@ override fun preCreateAppAPIResponse(preCreateAppResponse: PreCreateAppResponse?
 ```
 Here createAppResponse dataclass is :
 ```
-data class CreateAppResponse(
+data class PreCreateAppResponse(
     val customerAccountId: String?,
     val customerCreditApplicationId: String?,
     val message: String?,
