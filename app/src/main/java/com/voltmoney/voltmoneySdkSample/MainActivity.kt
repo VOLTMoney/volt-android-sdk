@@ -60,7 +60,12 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                 Toast.makeText(this, "Please create VoltInstance first", Toast.LENGTH_SHORT).show()
             }
             voltSDKContainer.let {
+                if (binding.etMobile.text.toString().length==10){
                     it?.initVoltSdk(binding.etMobile.text.toString().toLong())
+                }else{
+                   it?.initVoltSdk(null);
+                }
+
             }
         }
         binding.btDeleteUser.setOnClickListener {

@@ -80,9 +80,12 @@ class VoltSDKContainer(
         //write logic for creating application and upon success response from api update webView_url and open VoltWebViewActivity
     }
     fun initVoltSdk(mobileNumber: Long?) {
-        webView_url+="&user=$mobileNumber"
+        if(mobileNumber.toString().length==10){
+            webView_url+="&user=$mobileNumber"
+        }
         val intent = Intent(context, VoltWebViewActivity::class.java)
         intent.putExtra("webViewUrl",webView_url)
+        intent.putExtra("primaryColor",primaryColor)
         startActivity(context,intent,null)
     }
 }

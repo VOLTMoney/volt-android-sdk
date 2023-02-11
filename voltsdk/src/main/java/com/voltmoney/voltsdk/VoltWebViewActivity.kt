@@ -50,7 +50,7 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var reloadUrlmfPledge:Boolean = true
     private var reloadUrlKycStepper:Boolean = true
     private var reloadDashboard:Boolean = true
-
+    private var primaryColor:String? =null
     private var countWebViewLoad = 0
     private var webViewReloadCount = 0
     init {
@@ -63,6 +63,7 @@ class VoltWebViewActivity : AppCompatActivity() {
         webView = findViewById(R.id.web_view)
         if (intent.getStringExtra("webViewUrl")!=null){
             webUrl = intent.getStringExtra("webViewUrl")!!
+            primaryColor = intent.getStringExtra("primaryColor")
             webView.loadUrl(webUrl!!)
         }else{
             webUrl = "https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL"
@@ -314,11 +315,8 @@ class VoltWebViewActivity : AppCompatActivity() {
 
                 val customIntent = CustomTabsIntent.Builder()
                 customIntent.setUrlBarHidingEnabled(true)
-                customIntent.setShowTitle(true)
-                customIntent.setInitialActivityHeightPx(500)
                 customIntent.setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
-                customIntent.setToolbarCornerRadiusDp(10)
-                customIntent.setToolbarColor(Color.parseColor("#FF0000"))
+                customIntent.setToolbarColor(Color.parseColor("#$primaryColor"))
                 customIntent.setStartAnimations(
                     this@VoltWebViewActivity,
                     android.R.anim.slide_in_left,
