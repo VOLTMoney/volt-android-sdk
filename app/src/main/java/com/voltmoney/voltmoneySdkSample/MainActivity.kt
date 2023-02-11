@@ -14,30 +14,37 @@ import java.net.URL
 
 
 class MainActivity : AppCompatActivity(), VoltAPIResponse {
-    private lateinit var voltButton: Button
-    private lateinit var authButton: Button
-    private lateinit var createAppButton:Button
-    private lateinit var invokeVoltSdk:Button
     private var voltSDKContainer:VoltSDKContainer?=null
     private var preCreateAppResponse: PreCreateAppResponse?=null
-    private var authToken:String?=null
     lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.btVolt.setOnClickListener {
-           // var intent:Intent = Intent(this,VoltWebViewActivity::class.java)
-            //startActivity(Intent(this,VoltWebViewActivity::class.java))
-            voltSDKContainer = VoltSDKContainer(this,
-                "volt-sdk-staging@voltmoney.in",
-                "e10b6eaf2e334d1b955434e25fcfe2d8",
-                binding.etRef.text.toString(),
-                binding.etPrimaryColor.text.toString(),
-                null,
-                binding.etPlatform.text.toString()
-            )
+           voltSDKContainer = binding.etPrimaryColor.text.toString().let { it ->
+               if (it.length==6){
+                    binding.etPlatform.text.toString().let { it1->
+                        if (it1.length > 2){
+                            VoltSDKContainer(this,
+                                "volt-sdk-staging@voltmoney.in",
+                                "e10b6eaf2e334d1b955434e25fcfe2d8",
+                                binding.etRef.text.toString(),
+                                it,
+                                null,
+                                it1
+                            )
+                        }else{
+                            Toast.makeText(this, "Please enter correct Platform", Toast.LENGTH_SHORT).show()
+                            null
+                        }
 
+                    }
+                }else{
+                    Toast.makeText(this, "Please enter primary color", Toast.LENGTH_SHORT).show()
+                    null
+                }
+            }
         }
         binding.btCreateApp.setOnClickListener {
             if (voltSDKContainer == null){

@@ -2,7 +2,6 @@ package com.voltmoney.voltsdk
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -17,11 +16,9 @@ import android.util.Log
 import android.view.KeyEvent
 import android.webkit.*
 import android.widget.Toast
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -53,6 +50,7 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var primaryColor:String? =null
     private var countWebViewLoad = 0
     private var webViewReloadCount = 0
+    private lateinit var toolbar:Toolbar
     init {
 
     }
@@ -60,6 +58,10 @@ class VoltWebViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_volt_main)
         verifyCameraPermissions(this)
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
         webView = findViewById(R.id.web_view)
         if (intent.getStringExtra("webViewUrl")!=null){
             webUrl = intent.getStringExtra("webViewUrl")!!
@@ -69,6 +71,8 @@ class VoltWebViewActivity : AppCompatActivity() {
             webUrl = "https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL"
             webView.loadUrl(webUrl!!)
         }
+        toolbar.setBackgroundColor(Color.parseColor("#$primaryColor"))
+        toolbar.setNavigationIcon(R.drawable.arrow_back)
         webUri = Uri.parse(webUrl)
         webView.settings.apply {
             javaScriptEnabled = true
@@ -316,7 +320,9 @@ class VoltWebViewActivity : AppCompatActivity() {
                 val customIntent = CustomTabsIntent.Builder()
                 customIntent.setUrlBarHidingEnabled(true)
                 customIntent.setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
-                customIntent.setToolbarColor(Color.parseColor("#$primaryColor"))
+               if(primaryColor?.length==6) {
+                   customIntent.setToolbarColor(Color.parseColor("#$primaryColor"))
+               }
                 customIntent.setStartAnimations(
                     this@VoltWebViewActivity,
                     android.R.anim.slide_in_left,
@@ -443,5 +449,9 @@ class VoltWebViewActivity : AppCompatActivity() {
                 REQUEST_CODE_CAMERA
             )
         }
+    }
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }
