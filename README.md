@@ -38,6 +38,7 @@ The first and mandatory step to integrate volt sdk is to create an instance of V
 4. **primary_color(optional)** : Primary color, hex code of the color to be used as primary color for Volt Money sdk. The UI will get automatically customized to use this color as primary color (ex. all CTA, Icons etc.)
 5. **secondary_color(optional)** : Secondary color, hex code of the color to be used as secondary color for Volt Money sdk. The UI will get automatically customized to use this color. ex. all svgs, progress bar etc.)
 6. **ref (optional)**: Ref, is short for referral code, referral code can be specific to partner/platform based on the use-case. If provided the user signing up would be associated with the partner/platform.
+7. **voltenv(optional)**: pass a  value for voltenv using VOLTENV enum.(Accepted values are : VOLTENV.STAGING and VOLTENV.PRODUCTION). Default value for this param is VOLTENV.STAGING.
 
 VoltSDKContainer instance can be created as follows:
 
@@ -48,7 +49,8 @@ VoltSDKContainer instance can be created as follows:
                 "partner_platform",
                 "primary_color",
                 "secondary_color",
-                "ref")
+                "ref",
+                "voltenv")
   ```
 
 ## 3. Pre-create customer application (Optional)

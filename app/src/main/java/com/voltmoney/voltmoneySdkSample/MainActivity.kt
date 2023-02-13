@@ -2,12 +2,12 @@ package com.voltmoney.voltmoneySdkSample
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.voltmoney.voltmoneySdkSample.databinding.ActivityMainBinding
 import com.voltmoney.voltsdk.VoltAPIResponse
 import com.voltmoney.voltsdk.VoltSDKContainer
+import com.voltmoney.voltsdk.models.VOLTENV
 import com.voltmoney.voltsdk.models.PreCreateAppResponse
 import java.net.HttpURLConnection
 import java.net.URL
@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                 it,
                                 null,
                                 binding.etRef.text.toString(),
+                               VOLTENV.STAGING
                             )
                         }else{
                             Toast.makeText(this, "Please enter correct Platform", Toast.LENGTH_SHORT).show()

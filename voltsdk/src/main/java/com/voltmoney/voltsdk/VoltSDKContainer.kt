@@ -18,18 +18,15 @@ class VoltSDKContainer(
     private val partner_platform: String,
     private val primary_color: String?,
     private val secondary_color: String?,
-    private val ref: String?
+    private val ref: String?,
+    private val voltenv: VOLTENV=VOLTENV.STAGING
 ) {
     private var authToken:String?=null
     private var voltAPI: VoltAPI
-    companion object
-    {
-        const val BASE_URL = "https://app.staging.voltmoney.in/partnerplatform"
-    }
     init {
         voltAPI = RetrofitHelper.getInstance().create(VoltAPI::class.java)
     }
-    var webView_url:String = "$BASE_URL?" +
+    var webView_url:String = "${voltenv.baseurl}?" +
             "ref=$ref" +
             "&primaryColor=$primary_color" +
             "&platform=$partner_platform"
