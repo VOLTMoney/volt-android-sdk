@@ -47,10 +47,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     //when using jitpack
-   /* implementation 'com.github.VOLTMoney:volt-android-sdk:1.0'*/
+    implementation 'com.github.VOLTMoney:volt-android-sdk:1.0.0'
 
     //When using module
-    implementation project(':voltsdk')
+    //implementation project(':voltsdk')
 
     //When using aar as dependency
     /*implementation files('libs/voltsdk-release.aar')
