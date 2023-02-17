@@ -24,7 +24,7 @@ allprojects {
 ```
 Step 2. Add the dependency for VOLT SDK.
 ```
-implementation 'com.github.VOLTMoney:volt-android-sdk:1.0.0'
+implementation 'com.github.VOLTMoney:volt-android-sdk:1.0.1'
 
 ```
 
