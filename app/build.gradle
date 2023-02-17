@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId "com.voltmoney.voltmoneySdkSample"
-        minSdk 24
-        targetSdk 33
+        minSdk 19
+        targetSdk 32
         versionCode 1
         versionName "1.0"
 
@@ -46,7 +46,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     //when using jitpack
-    //implementation 'com.github.VOLTMoney:volt-android-sdk:1.0.0'
+    //implementation 'com.github.VOLTMoney:volt-android-sdk:1.0.2'
 
     //When using module
     implementation project(':voltsdk')
