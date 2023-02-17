@@ -13,6 +13,8 @@ This repo contains a sample andriod app, which consumes the Volt Money andriod S
 * Download Latest Android Studio and open this cloned repo as a new project.
 * This sdk is published on jitpack, follow below steps to get it in your project:
 
+[![](https://jitpack.io/v/VOLTMoney/volt-android-sdk.svg)](https://jitpack.io/#VOLTMoney/volt-android-sdk)
+
 Step 1. Add it in your root build.gradle at the end of repositories:
 ```
 allprojects {
@@ -24,10 +26,9 @@ allprojects {
 ```
 Step 2. Add the dependency for VOLT SDK.
 ```
-implementation 'com.github.VOLTMoney:volt-android-sdk:1.0.1'
+implementation 'com.github.VOLTMoney:volt-android-sdk:1.0.2'
 
 ```
-
 ## 2. Create an instance of VoltSDK
 
 The first and mandatory step to integrate volt sdk is to create an instance of VoltSDKContainer class. The constructor to the class takes in configuration parameters which would be used while rendering content, these are:
