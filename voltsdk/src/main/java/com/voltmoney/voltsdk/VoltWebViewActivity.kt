@@ -207,15 +207,11 @@ class VoltWebViewActivity : AppCompatActivity() {
                  reloadUrlmfFetch = false
                  webUrl?.let { view!!.loadUrl(it) }
                  countWebViewLoad = 0
-                 Log.d("VoltWebViewReloadCount: ",(webViewReloadCount++).toString())
-                 Log.d("UrlWherePageReloaded",url.toString())
                 }
              if (url!!.contains("mf_pledge_portfolio") && reloadUrlmfPledge){
                  reloadUrlmfPledge = false
                  webUrl?.let { view!!.loadUrl(it) }
                  countWebViewLoad = 0
-                 Log.d("VoltWebViewReloadCount: ",(webViewReloadCount++).toString())
-                 Log.d("UrlWherePageReloaded",url.toString())
                 }
              if (url!!.contains("kyc_stepper") && reloadUrlKycStepper)
                 {
@@ -224,8 +220,6 @@ class VoltWebViewActivity : AppCompatActivity() {
                  webUrl?.let { view!!.loadUrl(it) }
                    // https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL&user=8939254696/pledge_confirmation
                  countWebViewLoad = 0
-                 Log.d("VoltWebViewReloadCount: ",(webViewReloadCount++).toString())
-                 Log.d("UrlWherePageReloaded",url.toString())
                 }
             if (url!!.contains("bank_account_verification") && reloadUrlBankAccount)
             {
@@ -234,8 +228,6 @@ class VoltWebViewActivity : AppCompatActivity() {
                 webUrl?.let { view!!.loadUrl(it) }
                 // https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL&user=8939254696/pledge_confirmation
                 countWebViewLoad = 0
-                Log.d("VoltWebViewReloadCount: ",(webViewReloadCount++).toString())
-                Log.d("UrlWherePageReloaded",url.toString())
             }
             if(url!!.contains("dashboard") && reloadDashboard){
                 reloadDashboard = false
@@ -243,8 +235,6 @@ class VoltWebViewActivity : AppCompatActivity() {
                 webUrl?.let { view!!.loadUrl(it) }
                 // https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL&user=8939254696/pledge_confirmation
                 countWebViewLoad = 0
-                Log.d("VoltWebViewReloadCount: ",(webViewReloadCount++).toString())
-                Log.d("UrlWherePageReloaded",url.toString())
             }
                 countWebViewLoad++
         }

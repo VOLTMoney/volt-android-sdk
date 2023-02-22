@@ -7,8 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.voltmoney.voltmoneySdkSample.databinding.ActivityMainBinding
 import com.voltmoney.voltsdk.VoltAPIResponse
 import com.voltmoney.voltsdk.VoltSDKContainer
-import com.voltmoney.voltsdk.models.VOLTENV
 import com.voltmoney.voltsdk.models.PreCreateAppResponse
+import com.voltmoney.voltsdk.models.VOLTENV
+
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -62,7 +63,6 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                 )
             }
         }
-
         binding.btInvokeVoltSdk.setOnClickListener {
             if (voltSDKContainer == null){
                 Toast.makeText(this, "Please create VoltInstance first", Toast.LENGTH_SHORT).show()
@@ -116,7 +116,6 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
         }
     }
     override fun preCreateAppAPIResponse(preCreateAppResponse: PreCreateAppResponse?, errorMsg: String?) {
-
         this.preCreateAppResponse =preCreateAppResponse
         if (preCreateAppResponse?.customerAccountId !=null) {
                 Toast.makeText(
