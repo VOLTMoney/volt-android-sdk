@@ -113,7 +113,9 @@ class VoltWebViewActivity : AppCompatActivity() {
                         val intent = Intent(Intent.ACTION_GET_CONTENT)
                         intent.addCategory(Intent.CATEGORY_OPENABLE)
                         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                        intent.type = "image/*"
+                        val mimetype = arrayOf("application/pdf","image/*")
+                        intent.type = "*/*"
+                        intent.putExtra(Intent.EXTRA_MIME_TYPES,mimetype)
                         startActivityForResult(intent, REQUEST_CODE_FILE_CHOOSER)
                     }
                 }
