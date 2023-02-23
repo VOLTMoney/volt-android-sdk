@@ -395,7 +395,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             }
             if (photoFile != null) {
                 capturePhotoPath = "file:" + photoFile.absolutePath
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", photoFile))
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".fileprovider", photoFile))
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 startActivityForResult(intent, REQUEST_CODE_CAMERA)
             }
