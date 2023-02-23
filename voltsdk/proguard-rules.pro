@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep class com.voltmoney.voltsdk.VoltSDKContainer { public protected <methods>; }
+-keep class com.voltmoney.voltsdk.models.VOLTENV { public protected <methods>; }
+-keep class com.voltmoney.voltsdk.models.PreCreateAppResponse { public protected <methods>; }
+-keep class com.voltmoney.voltsdk.VoltAPIResponse{ public protected <methods>; }

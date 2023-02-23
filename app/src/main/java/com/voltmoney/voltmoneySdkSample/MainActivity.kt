@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                 it,
                                 null,
                                 binding.etRef.text.toString(),
-                               VOLTENV.STAGING
+                               VOLTENV.valueOf("PRODUCTION")
                             )
                         }else{
                             Toast.makeText(this, "Please enter correct Platform", Toast.LENGTH_SHORT).show()
