@@ -11,7 +11,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class VoltSDKContainer(
+open class VoltSDKContainer(
     private val context: Context,
     private val app_key: String,
     private val app_secret: String,
