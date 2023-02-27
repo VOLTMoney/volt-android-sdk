@@ -8,7 +8,7 @@
         android:hardwareAccelerated="true">
         <activity
             android:name="com.voltmoney.voltsdk.VoltWebViewActivity"
-            android:exported="true"
+            android:exported="false"
             android:theme="@style/Theme.VoltTheme" />
     </application>
 </manifest>
