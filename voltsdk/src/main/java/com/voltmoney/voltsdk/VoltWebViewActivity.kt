@@ -39,7 +39,7 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var webUrl:String?=null
     private var webUri:Uri?=null
     private val PERMISSIONS_CAMERA = arrayOf(Manifest.permission.CAMERA)
-    private val urlOpenInCustomTab = arrayOf("docapp.bajajfinserv.in")
+    private val urlOpenInCustomTab = arrayOf("alpha-","bfin.in","docapp.bajajfinserv.in","bajajfinserv")
     private val shouldNotReloadUrls = arrayOf("otp_verify","kyc_pan_verification","otp_auth_cas","mf_fetch_portfolio","pledge_confirmation","bank_account_verification","bank_select","bank_account_add","checking_limit","mf_pledge_portfolio")
     private val shouldReloadUrls = arrayOf("mf_fetch_portfolio","mf_pledge_portfolio","kyc_stepper","bank_account_verification","modify_pledged_amount","portfolio","pledge_confirmation","update_phone_number","update_email_id","otp_auth_cas","pledge_verify")
     private var reloadUrlBankAccount:Boolean = true
