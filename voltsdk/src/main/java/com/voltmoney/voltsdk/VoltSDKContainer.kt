@@ -28,8 +28,8 @@ class VoltSDKContainer(
     }
     var webView_url:String = "${voltenv.baseurl}?" +
             "ref=$ref" +
-            "&primaryColor=$primary_color" +
-            "&platform=$partner_platform"
+            "&platform=$partner_platform" +
+            "&primaryColor=$primary_color"
     fun preCreateApplication(dob:String,email:String,mobileNumber: Long,pan:String){
         val createApplicationData = CreateApplicationData(CustomerDetails(dob,email, mobileNumber,pan))
         voltAPI.getAuthToken(AuthData(app_key,app_secret)).enqueue(object:Callback<PreCreateAppResponse>{
