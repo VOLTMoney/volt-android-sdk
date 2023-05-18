@@ -3,6 +3,7 @@ package com.voltmoney.voltsdk
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.webkit.WebStorage
 import androidx.core.content.ContextCompat.startActivity
 import com.voltmoney.voltsdk.models.*
 import org.json.JSONObject
@@ -19,7 +20,9 @@ class VoltSDKContainer(
     private val primary_color: String?,
     private val secondary_color: String?,
     private val ref: String?,
-    private val voltenv: VOLTENV=VOLTENV.STAGING
+    private val voltenv: VOLTENV=VOLTENV.STAGING,
+    private var headingTextColor: String = ""
+
 ) {
     private var authToken:String?=null
     private var voltAPI: VoltAPI
@@ -83,6 +86,12 @@ class VoltSDKContainer(
         val intent = Intent(context, VoltWebViewActivity::class.java)
         intent.putExtra("webViewUrl",webView_url)
         intent.putExtra("primaryColor",primary_color)
+        intent.putExtra("textColor", headingTextColor)
         startActivity(context,intent,null)
+
+    }
+
+    fun logoutSDK(){
+        WebStorage.getInstance().deleteAllData()
     }
 }

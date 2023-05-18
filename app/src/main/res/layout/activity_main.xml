@@ -48,10 +48,11 @@
             android:id="@+id/bt_invokeVoltSdk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
             android:text="Invoke SDK"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_bias="0.416"
             app:layout_constraintStart_toStartOf="parent" />
 
         <EditText
@@ -257,5 +258,16 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/bt_createApp"
             app:layout_constraintTop_toTopOf="@+id/guideline4" />
+
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Clear"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/bt_invokeVoltSdk"
+            app:layout_constraintTop_toBottomOf="@+id/bt_delete_user" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
