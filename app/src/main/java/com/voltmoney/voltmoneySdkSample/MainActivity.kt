@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         binding.btVolt.setOnClickListener {
            voltSDKContainer = binding.etPrimaryColor.text.toString().let { it ->
                if (it.length==6){
@@ -34,7 +35,8 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                 it,
                                 null,
                                 binding.etRef.text.toString(),
-                               VOLTENV.valueOf("PRODUCTION")
+                               VOLTENV.valueOf("STAGING"),
+                                "FFFFFF"
                             )
                         }else{
                             Toast.makeText(this, "Please enter correct Platform", Toast.LENGTH_SHORT).show()
@@ -62,6 +64,10 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                     binding.etPan.text.toString()
                 )
             }
+        }
+
+        binding.logoutButton.setOnClickListener{
+            voltSDKContainer?.logoutSDK()
         }
         binding.btInvokeVoltSdk.setOnClickListener {
             if (voltSDKContainer == null){

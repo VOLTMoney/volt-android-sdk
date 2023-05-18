@@ -14,7 +14,9 @@ import android.os.Message
 import android.provider.MediaStore
 import android.util.Log
 import android.view.KeyEvent
+import android.view.WindowManager
 import android.webkit.*
+import android.webkit.WebView.WebViewTransport
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -51,6 +53,7 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var countWebViewLoad = 0
     private var webViewReloadCount = 0
     private lateinit var toolbar:Toolbar
+    private var textColor:String? = ""
     init {
 
     }
@@ -66,12 +69,16 @@ class VoltWebViewActivity : AppCompatActivity() {
         if (intent.getStringExtra("webViewUrl")!=null){
             webUrl = intent.getStringExtra("webViewUrl")!!
             primaryColor = intent.getStringExtra("primaryColor")
+            textColor= intent.getStringExtra("textColor")
             webView.loadUrl(webUrl!!)
         }else{
             webUrl = "https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL"
             webView.loadUrl(webUrl!!)
         }
         toolbar.setBackgroundColor(Color.parseColor("#$primaryColor"))
+        if(!textColor!!.isEmpty()) {
+            toolbar.setTitleTextColor(Color.parseColor("#$textColor"))
+        }
         toolbar.setNavigationIcon(R.drawable.arrow_back)
         webUri = Uri.parse(webUrl)
         webView.settings.apply {
@@ -88,9 +95,11 @@ class VoltWebViewActivity : AppCompatActivity() {
         }
         webView.webViewClient = VoltWebViewClient()
         webView.webChromeClient = VoltWebChromeClient()
+
     }
 
     inner class VoltWebChromeClient : WebChromeClient() {
+
         override fun onShowFileChooser(
             webView: WebView?,
             filePathCallback: ValueCallback<Array<Uri>>?,
