@@ -2,12 +2,14 @@ package com.voltmoney.voltsdk
 
 import android.Manifest
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.net.http.SslError
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Message
@@ -54,6 +56,8 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var webViewReloadCount = 0
     private lateinit var toolbar:Toolbar
     private var textColor:String? = ""
+    private var mWebviewPop: WebView? = null
+    private var builder: AlertDialog? = null
     init {
 
     }
@@ -88,7 +92,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             loadWithOverviewMode = true
             allowFileAccess = true
             domStorageEnabled = true
-            javaScriptCanOpenWindowsAutomatically = true
+ setSupportMultipleWindows(true)
             useWideViewPort = true
             allowContentAccess=true
            // mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
@@ -97,8 +101,130 @@ class VoltWebViewActivity : AppCompatActivity() {
         webView.webChromeClient = VoltWebChromeClient()
 
     }
+    private class UriWebViewClient : WebViewClient() {
+        /*
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            String host = Uri.parse(url).getHost();
+            //Log.d("shouldOverrideUrlLoading", url);
+            if (host.equals(target_url_prefix))
+            {
+                // This is my web site, so do not override; let my WebView load
+                // the page
+                if(mWebviewPop!=null)
+                {
+                    mWebviewPop.setVisibility(View.GONE);
+                    mContainer.removeView(mWebviewPop);
+                    mWebviewPop=null;
+                }
+                return false;
+            }
+
+            if(host.equals("m.facebook.com"))
+            {
+                return false;
+            }
+            // Otherwise, the link is not for a page on my site, so launch
+            // another Activity that handles URLs
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(intent);
+            return true;
+        }
+
+        */
+        override fun onReceivedSslError(
+            view: WebView, handler: SslErrorHandler,
+            error: SslError
+        ) {
+            Log.d("onReceivedSslError", "onReceivedSslError")
+            //super.onReceivedSslError(view, handler, error);
+        }
+    }
 
     inner class VoltWebChromeClient : WebChromeClient() {
+
+
+        override fun onCreateWindow(
+            view: WebView?,
+            isDialog: Boolean,
+            isUserGesture: Boolean,
+            resultMsg: Message?
+        ): Boolean {
+            mWebviewPop = WebView(this@VoltWebViewActivity)
+            mWebviewPop?.setVerticalScrollBarEnabled(false)
+            mWebviewPop?.setHorizontalScrollBarEnabled(false)
+            mWebviewPop?.setWebViewClient(UriWebViewClient())
+            mWebviewPop?.setWebChromeClient(VoltWebChromeClient())
+            mWebviewPop?.getSettings()?.setJavaScriptEnabled(true)
+            mWebviewPop?.getSettings()?.setSavePassword(true)
+            mWebviewPop?.getSettings()?.setSaveFormData(true)
+            // mWebviewPop.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            // create an AlertDialog.Builder
+            // the below did not give me .dismiss() method . See : https://stackoverflow.com/questions/14853325/how-to-dismiss-alertdialog-in-android
+
+            // AlertDialog.Builder builder;
+            // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            //     builder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+            // } else {
+            //     builder = new AlertDialog.Builder(MainActivity.this);
+            // }
+
+            // set the WebView as the AlertDialog.Builder’s view
+
+            // mWebviewPop.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            // create an AlertDialog.Builder
+            // the below did not give me .dismiss() method . See : https://stackoverflow.com/questions/14853325/how-to-dismiss-alertdialog-in-android
+
+            // AlertDialog.Builder builder;
+            // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            //     builder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+            // } else {
+            //     builder = new AlertDialog.Builder(MainActivity.this);
+            // }
+
+            // set the WebView as the AlertDialog.Builder’s view
+            builder = AlertDialog.Builder(this@VoltWebViewActivity, android.R.style.Theme_Light_NoTitleBar_Fullscreen)
+                .create()
+            builder?.setTitle("")
+            builder!!.setButton(AlertDialog.BUTTON_NEGATIVE,"Close", {
+                //do your own idea.
+                    dialog, which -> mWebviewPop!!.destroy() })
+            builder?.setView(mWebviewPop)
+
+
+
+
+            builder?.show()
+            builder?.getWindow()
+                ?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM)
+
+            val cookieManager = CookieManager.getInstance()
+            cookieManager.setAcceptCookie(true)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                cookieManager.setAcceptThirdPartyCookies(mWebviewPop, true)
+            }
+
+            val transport = resultMsg!!.obj as WebViewTransport
+            transport.webView = mWebviewPop
+            resultMsg!!.sendToTarget()
+            return true
+        }
+
+        override fun onCloseWindow(window: WebView?) {
+            try {
+                mWebviewPop!!.destroy()
+            } catch (e: Exception) {
+                // TODO: Write an exception handler to notify user
+            }
+
+            try {
+                builder!!.dismiss()
+            } catch (e: Exception) {
+                // TODO: Write an exception handler to notify user
+            }
+        }
 
         override fun onShowFileChooser(
             webView: WebView?,
