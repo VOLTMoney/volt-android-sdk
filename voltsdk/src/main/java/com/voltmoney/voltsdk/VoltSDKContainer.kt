@@ -21,7 +21,14 @@ class VoltSDKContainer(
     private val secondary_color: String?,
     private val ref: String?,
     private val voltenv: VOLTENV=VOLTENV.STAGING,
-    private var headingTextColor: String = ""
+    private var headingTextColor: String = "",
+    private var target: String?,
+    private var customerSSToken: String?,
+    private var voltPlatformCode: String?,
+    private var utmSource: String?,
+    private var utmCampaign: String?,
+    private var utmToken: String?,
+    private var platformAuthToken: String?
 
 ) {
     private var authToken:String?=null
@@ -32,7 +39,13 @@ class VoltSDKContainer(
     var webView_url:String = "${voltenv.baseurl}?" +
             "ref=$ref" +
             "&platform=$partner_platform" +
-            "&primaryColor=$primary_color"
+            "&primaryColor=$primary_color" +
+            "&target=$target" +
+            "&ssoToken=$customerSSToken" +
+            "&voltPlatformCode=$voltPlatformCode" +
+            "&utmSource=${if(utmSource == null) "" else utmSource}" +
+            "&utmCampaign=${if(utmCampaign == null) "" else utmCampaign}" +
+            "&utmToken=${if(utmToken == null) "" else utmToken}"
     fun preCreateApplication(dob:String,email:String,mobileNumber: Long,pan:String){
         val createApplicationData = CreateApplicationData(CustomerDetails(dob,email, mobileNumber,pan))
         voltAPI.getAuthToken(AuthData(app_key,app_secret)).enqueue(object:Callback<PreCreateAppResponse>{
@@ -83,10 +96,18 @@ class VoltSDKContainer(
         if(mobileNumber.toString().length==10){
             webView_url+="&user=$mobileNumber"
         }
+        Log.d("TAG", "initVoltSdk: URL ${webView_url}")
         val intent = Intent(context, VoltWebViewActivity::class.java)
-        intent.putExtra("webViewUrl",webView_url)
-        intent.putExtra("primaryColor",primary_color)
+        intent.putExtra("webViewUrl", webView_url)
+        intent.putExtra("primaryColor", primary_color)
         intent.putExtra("textColor", headingTextColor)
+        intent.putExtra("voltPlatformCode", voltPlatformCode)
+        if (target != "") intent.putExtra("target", target)
+        if (customerSSToken != "") intent.putExtra("customerSSToken", customerSSToken)
+        if (utmSource != "") intent.putExtra("utmSource", utmSource)
+        if (utmCampaign != "") intent.putExtra("utmCampaign", utmCampaign)
+        if (utmToken != "") intent.putExtra("utmToken", utmToken)
+        intent.putExtra("platformAuthToken", platformAuthToken)
         startActivity(context,intent,null)
 
     }
