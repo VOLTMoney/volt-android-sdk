@@ -109,7 +109,6 @@ class VoltWebViewActivity : AppCompatActivity() {
             target = intent.getStringExtra("target")
             customerSSToken = intent.getStringExtra("customerSSToken")
             voltPlatformCode = intent.getStringExtra("voltPlatformCode")
-            divId = intent.getStringExtra("divId")
             platformAuthToken = intent.getStringExtra("platformAuthToken")
             webView.loadUrl(webUrl!!)
             toolbar.setBackgroundColor(Color.parseColor("#$primaryColor"))

@@ -9,15 +9,17 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
 import com.voltmoney.voltmoneySdkSample.databinding.ActivityMainBinding
 import com.voltmoney.voltsdk.VoltAPIResponse
 import com.voltmoney.voltsdk.VoltSDKContainer
 import com.voltmoney.voltsdk.models.PreCreateAppResponse
 import com.voltmoney.voltsdk.models.VOLTENV
 import org.json.JSONObject
-import java.io.DataOutputStream
-import java.io.OutputStream
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -25,13 +27,22 @@ import java.net.URL
 class MainActivity : AppCompatActivity(), VoltAPIResponse {
     private var voltSDKContainer: VoltSDKContainer? = null
     private var preCreateAppResponse: PreCreateAppResponse? = null
+    private lateinit var requestQueue: RequestQueue
+
+
     lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        var showVoltDefaultHeader: Boolean
+        var showVoltLogo: Boolean
+        var customLogoUrl: String
+        var customSupportNumber: String
         var isStagingChecked: Boolean = true
         var isProductionChecked: Boolean = false
+        requestQueue = Volley.newRequestQueue(this)
+
 
         binding.stagingRB.setOnCheckedChangeListener { button, b ->
             if (binding.stagingRB.isChecked) {
@@ -62,6 +73,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                     var customerCode = binding.etCustomerCode.text.toString()
 
                     if (platformAuthToken == null) {
+                        Log.e("TAG", "Please enter Platform Auth Token")
                         Toast.makeText(this, "Please enter Platform Auth Token", Toast.LENGTH_SHORT)
                             .show()
                     } else {
@@ -85,7 +97,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                             utmSource,
                                             utmCampaign,
                                             utmToken,
-                                            platformAuthToken
+                                            platformAuthToken,
                                         )
                                     }
                                 }
@@ -111,16 +123,15 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                                 utmSource,
                                                 utmCampaign,
                                                 utmToken,
-                                                platformAuthToken
+                                                platformAuthToken,
                                             )
                                         }
                                     }
                                 }
                             } else {
+                                Log.e("TAG", "Please enter Customer Code")
                                 Toast.makeText(
-                                    this,
-                                    "Please enter Customer Code",
-                                    Toast.LENGTH_SHORT
+                                    this, "Please enter Customer Code", Toast.LENGTH_SHORT
                                 ).show()
                             }
                         }
@@ -143,20 +154,20 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                 utmSource,
                                 utmCampaign,
                                 utmToken,
-                                platformAuthToken
+                                platformAuthToken,
                             )
 
                         } else {
+                            Log.e("TAG", "Please enter correct platform")
                             Toast.makeText(
-                                this,
-                                "Please enter correct Platform",
-                                Toast.LENGTH_SHORT
+                                this, "Please enter correct Platform", Toast.LENGTH_SHORT
                             ).show()
                             null
                         }
 
                     }
                 } else {
+                    Log.e("TAG", "Please enter primary color")
                     Toast.makeText(this, "Please enter primary color", Toast.LENGTH_SHORT).show()
                     null
                 }
@@ -164,9 +175,11 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
         }
         binding.btCreateApp.setOnClickListener {
             if (voltSDKContainer == null) {
+                Log.e("TAG", "Please create VoltInstance first")
                 Toast.makeText(this, "Please create VoltInstance first", Toast.LENGTH_SHORT).show()
             }
             if (binding.etMobile.text.toString().length < 10) {
+                Log.e("TAG", "Please input correct mobile number")
                 Toast.makeText(this, "Please input correct mobile number", Toast.LENGTH_SHORT)
                     .show()
             } else {
@@ -183,271 +196,314 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
             voltSDKContainer?.logoutSDK()
         }
         binding.btInvokeVoltSdk.setOnClickListener {
-            Log.d("TAG", "BVH: button listener invoked")
             if (voltSDKContainer == null) {
+                Log.e("TAG", "Please create VoltInstance first")
                 Toast.makeText(this, "Please create VoltInstance first", Toast.LENGTH_SHORT).show()
             } else if (binding.etPlatformAuthToken.text.toString() == null || binding.etPlatformAuthToken.text.toString()
                     .trim() == ""
             ) {
+                Log.e("TAG", "Please enter Platform Auth Token")
                 Toast.makeText(this, "Please enter Platform Auth token", Toast.LENGTH_SHORT).show()
             } else if (binding.etSsoToken.text.toString().trim() != "") {
                 if (binding.etCustomerCode.text.toString().trim() == "") {
+                    Log.e("TAG", "Please enter Customer Code")
                     Toast.makeText(this, "Please enter Customer Code", Toast.LENGTH_SHORT).show()
                 } else {
                     if (binding.etTarget.text.toString().trim() == "") {
                         var getDetailsURL =
                             if (isStagingChecked) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
-                        val thread: Thread = Thread(object : Runnable {
-                            override fun run() {
-                                Log.d("TAG", "BVH: button listener Get Details - API Call")
-                                val url: URL =
-                                    URL(getDetailsURL)
-                                val urlConnection: HttpURLConnection =
-                                    url.openConnection() as HttpURLConnection
-                                try {
-                                    // setting the  Request Method Type
-                                    urlConnection.requestMethod = "GET";
-                                    urlConnection.setRequestProperty(
-                                        "X-AppPlatform",
-                                        binding.etPlatform.text.toString()
-                                    )
-                                    urlConnection.setRequestProperty(
-                                        "Authorization",
-                                        "Bearer ${binding.etPlatformAuthToken.text}"
-                                    )
-                                    urlConnection.setChunkedStreamingMode(0);
-                                    if (urlConnection.responseCode == 200) {
-                                        Log.d(
-                                            "TAG",
-                                            "BVH: button listener Get Details - Success Block"
-                                        )
-                                        var customerCode = binding.etCustomerCode.text.toString()
-                                        var validateSSOTokenURL =
-                                            if (isStagingChecked) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
-                                        val requestQueue: RequestQueue =
-                                            Volley.newRequestQueue(this@MainActivity)
 
-                                        // Prepare the JSON object data
-                                        val jsonBody = JSONObject()
-                                        jsonBody.put(
-                                            "ssoToken",
-                                            binding.etSsoToken.text
-                                        )
+                        val stringRequest = object : StringRequest(Request.Method.GET,
+                            getDetailsURL,
+                            Response.Listener { response ->
+                                // Handle the response here
+                                val gson = Gson()
+                                val responseData = gson.fromJson(response, ResponseData::class.java)
+                                val platformSDKConfig = responseData.platformSDKConfig
+                                Log.d("TAG", "Response: $platformSDKConfig")
+                                if (platformSDKConfig != null) {
+                                    showVoltDefaultHeader = platformSDKConfig.showDefaultVoltHeader
+                                }
+                                if (platformSDKConfig != null) {
+                                    showVoltLogo = platformSDKConfig.showVoltLogo
+                                }
+                                if (platformSDKConfig != null) {
+                                    customLogoUrl = platformSDKConfig.customLogoUrl
+                                }
+                                if (platformSDKConfig != null) {
+                                    customSupportNumber = platformSDKConfig.customSupportNumber
+                                }
+                                var customerCode = binding.etCustomerCode.text.toString()
+                                var validateSSOTokenURL =
+                                    if (isStagingChecked) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
+                                val requestQueue: RequestQueue =
+                                    Volley.newRequestQueue(this@MainActivity)
 
-                                        // Create a Volley JSON Object Request
-                                        val jsonObjectRequest = object : JsonObjectRequest(
-                                            Request.Method.POST,
-                                            validateSSOTokenURL,
-                                            jsonBody,
-                                            Response.Listener { response ->
-                                                Log.d("TAG", "BVH Volley Response 200: ")
-                                                voltSDKContainer.let {
-                                                    if (binding.etMobile.text.toString().length == 10) {
+                                // Prepare the JSON object data
+                                val jsonBody = JSONObject()
+                                jsonBody.put(
+                                    "ssoToken", binding.etSsoToken.text
+                                )
+
+                                // Create a Volley JSON Object Request
+                                val jsonObjectRequest =
+                                    object : JsonObjectRequest(Request.Method.POST,
+                                        validateSSOTokenURL,
+                                        jsonBody,
+                                        Response.Listener { response ->
+                                            voltSDKContainer.let {
+                                                if (binding.etMobile.text.toString().length == 10) {
+                                                    if (platformSDKConfig != null) {
                                                         it?.initVoltSdk(
                                                             binding.etMobile.text.toString()
-                                                                .toLong()
+                                                                .toLong(),
+                                                            platformSDKConfig.showDefaultVoltHeader,
+                                                            platformSDKConfig.showVoltLogo,
+                                                            platformSDKConfig.customLogoUrl,
+                                                            platformSDKConfig.customSupportNumber
                                                         )
                                                     } else {
-                                                        it?.initVoltSdk(null);
+                                                        it?.initVoltSdk(
+                                                            binding.etMobile.text.toString()
+                                                                .toLong(),
+                                                            false,
+                                                           false,
+                                                            "",
+                                                            ""
+                                                        )
+                                                    }
+                                                } else {
+                                                    if (platformSDKConfig != null) {
+                                                        it?.initVoltSdk(
+                                                            null,
+                                                            platformSDKConfig.showDefaultVoltHeader,
+                                                            platformSDKConfig.showVoltLogo,
+                                                            platformSDKConfig.customLogoUrl,
+                                                            platformSDKConfig.customSupportNumber
+                                                        )
+                                                    } else {
+                                                        it?.initVoltSdk(
+                                                           null,
+                                                            false,
+                                                            false,
+                                                            "",
+                                                            ""
+                                                        )
                                                     }
                                                 }
-                                            },
-                                            Response.ErrorListener { error ->
-                                                Log.d("TAG", "BVH Volley Response Error: ")
-
-                                                // Handle the error here
-                                            }) {
-
-                                            // Add headers to the request
-                                            @Throws(AuthFailureError::class)
-                                            override fun getHeaders(): MutableMap<String, String> {
-                                                val headers = HashMap<String, String>()
-                                                headers["X-AppPlatform"] = "VOLT_API_UAT"
-                                                headers["requestReferenceId"] = "5eufmnf6phj"
-                                                headers["Content-Type"] = "application/json"
-                                                headers["Authorization"] =
-                                                    "Bearer ${binding.etPlatformAuthToken.text}"
-                                                return headers
                                             }
+                                        },
+                                        Response.ErrorListener { error ->
+                                            Log.e("TAG", "Customer SSO Token is incorrect")
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "Customer SSO token is incorrect",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }) {
+
+                                        // Add headers to the request
+                                        @Throws(AuthFailureError::class)
+                                        override fun getHeaders(): MutableMap<String, String> {
+                                            val headers = HashMap<String, String>()
+                                            headers["X-AppPlatform"] = "VOLT_API_UAT"
+                                            headers["requestReferenceId"] = "5eufmnf6phj"
+                                            headers["Content-Type"] = "application/json"
+                                            headers["Authorization"] =
+                                                "Bearer ${binding.etPlatformAuthToken.text}"
+                                            return headers
                                         }
-                                        requestQueue.add(jsonObjectRequest)
                                     }
-
-
-                                } finally {
-                                    urlConnection.disconnect();
-
-                                }
+                                requestQueue.add(jsonObjectRequest)
+                            },
+                            Response.ErrorListener { error ->
+                                // Handle error cases here
+                                Log.e("TAG", "Error occurred: ${error.message}")
+                            }) {
+                            override fun getHeaders(): MutableMap<String, String> {
+                                var authToken = binding.etPlatformAuthToken.text.toString()
+                                // Set your custom headers here
+                                val headers = HashMap<String, String>()
+                                headers["Authorization"] = "Bearer $authToken"
+                                headers["X-AppPlatform"] = binding.etPlatform.text.toString()
+                                // Add more headers as needed
+                                return headers
                             }
-                        })
-                        thread.start()
+                        }
+                        requestQueue.add(stringRequest)
                     } else {
                         var target = binding.etTarget.text.toString().trim()
-                        if (target != "manageLimit" && target != "account" && target != "payment" && target != "withdraw") {
+                        if (target != "" && target != "manageLimit" && target != "account" && target != "payment" && target != "withdraw") {
+                            Log.e("TAG", "the target page does not exist")
                             Toast.makeText(
-                                this,
-                                "The target page does not exist",
-                                Toast.LENGTH_SHORT
+                                this, "The target page does not exist", Toast.LENGTH_SHORT
                             ).show()
                         } else {
                             var getDetailsURL =
                                 if (isStagingChecked) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
-                            val thread: Thread = Thread(object : Runnable {
-                                override fun run() {
-                                    Log.d("TAG", "BVH: button listener Get Details - API Call")
-                                    val url: URL =
-                                        URL(getDetailsURL)
-                                    val urlConnection: HttpURLConnection =
-                                        url.openConnection() as HttpURLConnection
-                                    try {
-                                        Log.d(
-                                            "TAG",
-                                            "BVH: button listener Get Details - Inside Try block"
-                                        )
-                                        // setting the  Request Method Type
-                                        urlConnection.setRequestMethod("GET");
-                                        Log.d(
-                                            "TAG",
-                                            "BVH: button listener Get Details - Inside Try block 11"
-                                        )
-                                        urlConnection.setRequestProperty(
-                                            "X-AppPlatform",
-                                            binding.etPlatform.text.toString()
-                                        )
-                                        var authToken = binding.etPlatformAuthToken.text.toString()
-                                        Log.d(
-                                            "TAG",
-                                            "BVH: button listener Get Details - Inside Try block 22"
-                                        )
-                                        urlConnection.setRequestProperty(
-                                            "Authorization",
-                                            "Bearer $authToken"
-                                        )
-                                        Log.d(
-                                            "TAG",
-                                            "BVH: button listener Get Details - Inside Try block 33"
-                                        )
-                                        urlConnection.setChunkedStreamingMode(0);
-                                        Log.d(
-                                            "TAG",
-                                            "BVH: button listener Get Details - Inside Try block 44"
-                                        )
-                                        if (urlConnection.responseCode == 200) {
-                                            Log.d(
-                                                "TAG",
-                                                "BVH: button listener Get Details - Success Block"
-                                            )
-                                            Log.d("TAG", "APP_URL success case")
-                                            voltSDKContainer.let {
-                                                if (binding.etMobile.text.toString().length == 10) {
-                                                    it?.initVoltSdk(
-                                                        binding.etMobile.text.toString().toLong()
-                                                    )
-                                                } else {
-                                                    it?.initVoltSdk(null);
-                                                }
+
+                            val stringRequest = object : StringRequest(Request.Method.GET,
+                                getDetailsURL,
+                                Response.Listener { response ->
+                                    // Handle the response here
+                                    val gson = Gson()
+                                    val responseData =
+                                        gson.fromJson(response, ResponseData::class.java)
+                                    val platformSDKConfig = responseData.platformSDKConfig
+                                    Log.d("TAG", "Response: $platformSDKConfig")
+                                    if (platformSDKConfig != null) {
+                                        showVoltDefaultHeader =
+                                            platformSDKConfig.showDefaultVoltHeader
+                                    }
+                                    if (platformSDKConfig != null) {
+                                        showVoltLogo = platformSDKConfig.showVoltLogo
+                                    }
+                                    if (platformSDKConfig != null) {
+                                        customLogoUrl = platformSDKConfig.customLogoUrl
+                                    }
+                                    if (platformSDKConfig != null) {
+                                        customSupportNumber = platformSDKConfig.customSupportNumber
+                                    }
+                                    voltSDKContainer.let {
+                                        if (binding.etMobile.text.toString().length == 10) {
+                                            if (platformSDKConfig != null) {
+                                                it?.initVoltSdk(
+                                                    binding.etMobile.text.toString().toLong(),
+                                                    platformSDKConfig.showDefaultVoltHeader,
+                                                    platformSDKConfig.showVoltLogo,
+                                                    platformSDKConfig.customLogoUrl,
+                                                    platformSDKConfig.customSupportNumber,
+                                                )
+                                            } else {
+                                                it?.initVoltSdk(
+                                                    binding.etMobile.text.toString().toLong(),
+                                                    false,
+                                                    false,
+                                                    "",
+                                                    "",
+                                                )
                                             }
                                         } else {
-                                            Log.e("TAG", "Platform Auth token is incorrect")
-                                            Log.d(
-                                                "TAG",
-                                                "BVH: button listener Get Details 45- Failure Block"
-                                            )
-                                            Log.d("TAG", "APP_URL error case")
-                                        }
-                                    } finally {
-                                        // this is done so that there are no open connections left when this task is going to complete
-                                        urlConnection.disconnect();
+                                            if (platformSDKConfig != null) {
+                                                it?.initVoltSdk(
+                                                    null,
+                                                    platformSDKConfig.showDefaultVoltHeader,
+                                                    platformSDKConfig.showVoltLogo,
+                                                    platformSDKConfig.customLogoUrl,
+                                                    platformSDKConfig.customSupportNumber,
+                                                )
+                                            } else {
+                                                it?.initVoltSdk(
+                                                    null,
+                                                    false,
+                                                    false,
+                                                    "",
+                                                    "",
+                                                )
+                                            }                                        }
                                     }
+                                },
+                                Response.ErrorListener { error ->
+                                    // Handle error cases here
+                                    Log.e("TAG", "Error occurred: ${error.message}")
+                                }) {
+                                override fun getHeaders(): MutableMap<String, String> {
+                                    var authToken = binding.etPlatformAuthToken.text.toString()
+                                    // Set your custom headers here
+                                    val headers = HashMap<String, String>()
+                                    headers["Authorization"] = "Bearer $authToken"
+                                    headers["X-AppPlatform"] = binding.etPlatform.text.toString()
+                                    // Add more headers as needed
+                                    return headers
                                 }
-                            })
-                            thread.start()
+                            }
+                            requestQueue.add(stringRequest)
                         }
                     }
                 }
             } else {
                 var target = binding.etTarget.text.toString().trim()
-                if (target != "manageLimit" && target != "account" && target != "payment" && target != "withdraw") {
+                if (target != "" && target != "manageLimit" && target != "account" && target != "payment" && target != "withdraw") {
+                    Log.e("TAG", "The target page does not exist")
                     Toast.makeText(
-                        this,
-                        "The target page does not exist",
-                        Toast.LENGTH_SHORT
+                        this, "The target page does not exist", Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    Log.d("TAG", "BVH: ${isStagingChecked} Production: ${isProductionChecked}")
                     var getDetailsURL =
                         if (isStagingChecked) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
-                    Log.d("TAG", "BVH: button listener All Good")
-                    val thread: Thread = Thread(object : Runnable {
-                        override fun run() {
-                            Log.d("TAG", "BVH: button listener Get Details - API Call")
-                            val url: URL =
-                                URL(getDetailsURL)
-                            val urlConnection: HttpURLConnection =
-                                url.openConnection() as HttpURLConnection
-                            try {
-                                Log.d("TAG", "BVH: button listener Get Details - Inside Try block")
-                                // setting the  Request Method Type
-                                urlConnection.setRequestMethod("GET");
-                                Log.d(
-                                    "TAG",
-                                    "BVH: button listener Get Details - Inside Try block 11"
-                                )
-                                urlConnection.setRequestProperty(
-                                    "X-AppPlatform",
-                                    binding.etPlatform.text.toString()
-                                )
-                                var authToken = binding.etPlatformAuthToken.text.toString()
-                                Log.d(
-                                    "TAG",
-                                    "BVH: button listener Get Details - Inside Try block 22"
-                                )
-                                urlConnection.setRequestProperty(
-                                    "Authorization",
-                                    "Bearer $authToken"
-                                )
-                                Log.d(
-                                    "TAG",
-                                    "BVH: button listener Get Details - Inside Try block 33"
-                                )
-                                urlConnection.setChunkedStreamingMode(0);
-                                Log.d(
-                                    "TAG",
-                                    "BVH: button listener Get Details - Inside Try block 44"
-                                )
-                                if (urlConnection.responseCode == 200) {
-                                    Log.d("TAG", "BVH: button listener Get Details - Success Block")
-                                    Log.d("TAG", "APP_URL success case")
-                                    voltSDKContainer.let {
-                                        if (binding.etMobile.text.toString().length == 10) {
-                                            it?.initVoltSdk(
-                                                binding.etMobile.text.toString().toLong()
-                                            )
-                                        } else {
-                                            it?.initVoltSdk(null);
-                                        }
+
+                    val stringRequest = object : StringRequest(Request.Method.GET,
+                        getDetailsURL,
+                        Response.Listener { response ->
+                            // Handle the response here
+                            val gson = Gson()
+                            val responseData = gson.fromJson(response, ResponseData::class.java)
+                            val platformSDKConfig = responseData.platformSDKConfig
+                            Log.d("TAG", "Response: $platformSDKConfig")
+                            voltSDKContainer.let {
+                                if (binding.etMobile.text.toString().length == 10) {
+                                    if (platformSDKConfig != null) {
+                                        it?.initVoltSdk(
+                                            binding.etMobile.text.toString().toLong(),
+                                            platformSDKConfig.showDefaultVoltHeader,
+                                            platformSDKConfig.showVoltLogo,
+                                            platformSDKConfig.customLogoUrl,
+                                            platformSDKConfig.customSupportNumber,
+                                        )
+                                    } else {
+                                        it?.initVoltSdk(
+                                            binding.etMobile.text.toString().toLong(),
+                                            false,
+                                            false,
+                                            "",
+                                            "",
+                                        )
                                     }
                                 } else {
-                                    //Toast.makeText(this, "Platform Auth token is incorrect", Toast.LENGTH_SHORT).show()
-                                    Log.d(
-                                        "TAG",
-                                        "BVH: button listener Get Details 45- Failure Block ${urlConnection.responseCode}"
-                                    )
-                                    Log.d("TAG", "APP_URL error case")
+                                    if (platformSDKConfig != null) {
+                                        it?.initVoltSdk(
+                                            null,
+                                            platformSDKConfig.showDefaultVoltHeader,
+                                            platformSDKConfig.showVoltLogo,
+                                            platformSDKConfig.customLogoUrl,
+                                            platformSDKConfig.customSupportNumber,
+                                        )
+                                    } else {
+                                        it?.initVoltSdk(
+                                            null,
+                                            false,
+                                            false,
+                                            "",
+                                            "",
+                                        )
+                                    }
                                 }
-                            } finally {
-                                // this is done so that there are no open connections left when this task is going to complete
-                                urlConnection.disconnect();
                             }
+                        },
+                        Response.ErrorListener { error ->
+                            // Handle error cases here
+                            Log.e("TAG", "Error occurred: ${error.message}")
+                        }) {
+                        override fun getHeaders(): MutableMap<String, String> {
+                            var authToken = binding.etPlatformAuthToken.text.toString()
+                            // Set your custom headers here
+                            val headers = HashMap<String, String>()
+                            headers["Authorization"] = "Bearer $authToken"
+                            headers["X-AppPlatform"] = binding.etPlatform.text.toString()
+                            // Add more headers as needed
+                            return headers
                         }
-                    })
-                    thread.start()
-                    Log.d("TAG", "onCreate of SDK all good")
+                    }
+                    requestQueue.add(stringRequest)
                 }
             }
         }
+
+
+
         binding.btDeleteUser.setOnClickListener {
             if (binding.etMobile.text.toString().length < 10) {
+                Log.e("TAG", "Please input correct mobile number")
                 Toast.makeText(this, "Please input correct mobile number", Toast.LENGTH_SHORT)
                     .show()
             } else {
@@ -459,17 +515,8 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                             url.openConnection() as HttpURLConnection
                         try {
                             // setting the  Request Method Type
-                            urlConnection.setRequestMethod("GET");
+                            urlConnection.requestMethod = "GET";
                             urlConnection.setChunkedStreamingMode(0);
-                            // to log the response code of your request
-                            Log.d(
-                                "ApplicationConstant.TAG", urlConnection.responseCode.toString()
-                            )
-                            // to log the response message from your server after you have tried the request.
-                            Log.d(
-                                "ApplicationConstant.TAG", urlConnection.responseMessage.toString()
-                            )
-
                         } finally {
                             // this is done so that there are no open connections left when this task is going to complete
                             urlConnection.disconnect();
@@ -478,17 +525,14 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                 })
                 thread.start()
                 Toast.makeText(
-                    this,
-                    "User deleted :" + binding.etMobile.text.toString(),
-                    Toast.LENGTH_SHORT
+                    this, "User deleted :" + binding.etMobile.text.toString(), Toast.LENGTH_SHORT
                 ).show()
             }
         }
     }
 
     override fun preCreateAppAPIResponse(
-        preCreateAppResponse: PreCreateAppResponse?,
-        errorMsg: String?
+        preCreateAppResponse: PreCreateAppResponse?, errorMsg: String?
     ) {
         this.preCreateAppResponse = preCreateAppResponse
         if (preCreateAppResponse?.customerAccountId != null) {

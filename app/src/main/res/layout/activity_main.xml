@@ -37,7 +37,7 @@
                 android:textSize="18dp"
                 android:hint="Ref Cofe"
                 android:inputType="textPersonName"
-                android:text="4CCLRP" />
+                 />
 
         </LinearLayout>
 
@@ -63,7 +63,7 @@
                 android:textSize="18dp"
                 android:hint="primary color"
                 android:inputType="textPersonName"
-                android:text="FF6E31" />
+                android:text="1434CB" />
         </LinearLayout>
 
 
@@ -89,14 +89,9 @@
                 android:hint="Partner platform"
                 android:textSize="18dp"
                 android:inputType="textPersonName"
-                android:text="VOLT_API_UAT" />
+                />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/bt_volt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Create Volt SDK Instance" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -197,7 +192,6 @@
                     android:layout_height="wrap_content"
                     android:text="Environment"
                     android:textSize="16dp"
-                    android:textColor="@color/black"
                     android:layout_marginRight="8dp"
                     />
                 <RadioButton
@@ -257,37 +251,44 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:gravity="center"
-            android:layout_marginBottom="16dp"
-            android:paddingBottom="8dp"
-            android:layout_height="wrap_content">
+    <Button
+        android:id="@+id/bt_volt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:text="Create Volt SDK Instance" />
 
-            <Button
-                android:id="@+id/bt_delete_user"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
-                android:text="Delete User" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"
+        android:paddingBottom="8dp"
+        android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/logoutButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
-                android:layout_marginLeft="4dp"
-                android:text="Clear" />
+        <Button
+            android:id="@+id/bt_delete_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="Delete User" />
 
-            <Button
-                android:id="@+id/bt_invokeVoltSdk"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
-                android:layout_marginLeft="4dp"
-                android:text="Invoke SDK" />
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:layout_marginLeft="4dp"
+            android:text="Clear" />
 
-        </LinearLayout>
+        <Button
+            android:id="@+id/bt_invokeVoltSdk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:layout_marginLeft="4dp"
+            android:text="Invoke SDK" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/bt_createApp"
