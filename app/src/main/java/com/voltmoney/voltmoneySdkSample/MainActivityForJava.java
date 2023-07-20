@@ -15,7 +15,7 @@ public class MainActivityForJava extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
         VOLTENV v = VOLTENV.valueOf("PRODUCTION");
-        VoltSDKContainer container = new VoltSDKContainer(this,"","","","","","", VOLTENV.valueOf("PRODUCTION"), "", "", "", "", "", "", "", "");
+        VoltSDKContainer container = new VoltSDKContainer(this,"","","","","","", false, "", "", "", "", "", "", "", "", "");
 
     }
 }
