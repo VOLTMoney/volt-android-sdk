@@ -23,15 +23,13 @@ import com.android.volley.Response as VResponse
 class VoltSDKContainer(
     private val context: Context,
     private val partner_platform: String,
-    private val primary_color: String?,
+    private var platformAuthToken: String?,
     private var environment: ENVIRONMENT,
+    private val primary_color: String?,
     private var headingTextColor: String = "",
-    private var mobileNumber: String?,
     private var target: String?,
     private var customerSSToken: String?,
     private var customerCode: String?,
-    private var voltPlatformCode: String?,
-    private var platformAuthToken: String?,
     ) {
     var url =
         if (environment == ENVIRONMENT.STAGING) "https://app.staging.voltmoney.in/?partnerplatform" else "https://app.voltmoney.in/?partnerplatform"
@@ -72,17 +70,8 @@ class VoltSDKContainer(
                                     validateSSOTokenURL,
                                     jsonBody,
                                     VResponse.Listener { response ->
-                                        if (mobileNumber.toString().length == 10) {
                                             if (platformSDKConfig != null) {
-                                                if (mobileNumber.toString().length == 10) {
-                                                    webView_url += "&user=$mobileNumber&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                                } else {
                                                     webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                                }
-                                                Log.d(
-                                                    "TAG",
-                                                    "BVH initVoltSdk Customer SSO $webView_url"
-                                                )
                                                 val intent =
                                                     Intent(context, VoltWebViewActivity::class.java)
                                                 intent.putExtra("webViewUrl", webView_url)
@@ -90,7 +79,7 @@ class VoltSDKContainer(
                                                 intent.putExtra("textColor", headingTextColor)
                                                 intent.putExtra(
                                                     "voltPlatformCode",
-                                                    voltPlatformCode
+                                                    partner_platform
                                                 )
                                                 if (target != "") intent.putExtra("target", target)
                                                 if (customerSSToken != "") intent.putExtra(
@@ -103,13 +92,6 @@ class VoltSDKContainer(
                                                 )
                                                 startActivity(context, intent, null)
                                             } else {
-                                                if (mobileNumber.toString().length == 10) {
-                                                    webView_url += "&user=$mobileNumber"
-                                                }
-                                                Log.d(
-                                                    "TAG",
-                                                    "BVH initVoltSdk Customer SSO $webView_url"
-                                                )
                                                 val intent =
                                                     Intent(context, VoltWebViewActivity::class.java)
                                                 intent.putExtra("webViewUrl", webView_url)
@@ -117,7 +99,7 @@ class VoltSDKContainer(
                                                 intent.putExtra("textColor", headingTextColor)
                                                 intent.putExtra(
                                                     "voltPlatformCode",
-                                                    voltPlatformCode
+                                                    partner_platform
                                                 )
                                                 if (target != "") intent.putExtra("target", target)
                                                 if (customerSSToken != "") intent.putExtra(
@@ -130,57 +112,6 @@ class VoltSDKContainer(
                                                 )
                                                 startActivity(context, intent, null)
                                             }
-                                        } else {
-                                            if (platformSDKConfig != null) {
-                                                if (mobileNumber.toString().length == 10) {
-                                                    webView_url += "&user=$mobileNumber&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                                } else {
-                                                    webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                                }
-                                                val intent =
-                                                    Intent(context, VoltWebViewActivity::class.java)
-                                                intent.putExtra("webViewUrl", webView_url)
-                                                intent.putExtra("primaryColor", primary_color)
-                                                intent.putExtra("textColor", headingTextColor)
-                                                intent.putExtra(
-                                                    "voltPlatformCode",
-                                                    voltPlatformCode
-                                                )
-                                                if (target != "") intent.putExtra("target", target)
-                                                if (customerSSToken != "") intent.putExtra(
-                                                    "customerSSToken",
-                                                    customerSSToken
-                                                )
-                                                intent.putExtra(
-                                                    "platformAuthToken",
-                                                    platformAuthToken
-                                                )
-                                                startActivity(context, intent, null)
-                                            } else {
-                                                if (mobileNumber.toString().length == 10) {
-                                                    webView_url += "&user=$mobileNumber"
-                                                }
-                                                val intent =
-                                                    Intent(context, VoltWebViewActivity::class.java)
-                                                intent.putExtra("webViewUrl", webView_url)
-                                                intent.putExtra("primaryColor", primary_color)
-                                                intent.putExtra("textColor", headingTextColor)
-                                                intent.putExtra(
-                                                    "voltPlatformCode",
-                                                    voltPlatformCode
-                                                )
-                                                if (target != "") intent.putExtra("target", target)
-                                                if (customerSSToken != "") intent.putExtra(
-                                                    "customerSSToken",
-                                                    customerSSToken
-                                                )
-                                                intent.putExtra(
-                                                    "platformAuthToken",
-                                                    platformAuthToken
-                                                )
-                                                startActivity(context, intent, null)
-                                            }
-                                        }
                                     },
                                     VResponse.ErrorListener { error ->
                                         Log.e("TAG", "Customer SSO Token is incorrect")
@@ -206,7 +137,7 @@ class VoltSDKContainer(
                             // Set your custom headers here
                             val headers = HashMap<String, String>()
                             headers["Authorization"] = "Bearer $authToken"
-                            headers["X-AppPlatform"] = "$voltPlatformCode"
+                            headers["X-AppPlatform"] = "$partner_platform"
                             // Add more headers as needed
                             return headers
                         }
@@ -244,13 +175,8 @@ class VoltSDKContainer(
                                         validateSSOTokenURL,
                                         jsonBody,
                                         VResponse.Listener { response ->
-                                            if (mobileNumber.toString().length == 10) {
                                                 if (platformSDKConfig != null) {
-                                                    if (mobileNumber.toString().length == 10) {
-                                                        webView_url += "&user=$mobileNumber&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                                    } else {
                                                         webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                                    }
                                                     val intent =
                                                         Intent(
                                                             context,
@@ -261,7 +187,7 @@ class VoltSDKContainer(
                                                     intent.putExtra("textColor", headingTextColor)
                                                     intent.putExtra(
                                                         "voltPlatformCode",
-                                                        voltPlatformCode
+                                                        partner_platform
                                                     )
                                                     if (target != "") intent.putExtra(
                                                         "target",
@@ -277,9 +203,6 @@ class VoltSDKContainer(
                                                     )
                                                     startActivity(context, intent, null)
                                                 } else {
-                                                    if (mobileNumber.toString().length == 10) {
-                                                        webView_url += "&user=$mobileNumber"
-                                                    }
                                                     val intent =
                                                         Intent(
                                                             context,
@@ -290,7 +213,7 @@ class VoltSDKContainer(
                                                     intent.putExtra("textColor", headingTextColor)
                                                     intent.putExtra(
                                                         "voltPlatformCode",
-                                                        voltPlatformCode
+                                                        partner_platform
                                                     )
                                                     if (target != "") intent.putExtra(
                                                         "target",
@@ -306,69 +229,6 @@ class VoltSDKContainer(
                                                     )
                                                     startActivity(context, intent, null)
                                                 }
-                                            } else {
-                                                if (platformSDKConfig != null) {
-                                                    if (mobileNumber.toString().length == 10) {
-                                                        webView_url += "&user=$mobileNumber&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                                    } else {
-                                                        webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                                    }
-                                                    val intent =
-                                                        Intent(
-                                                            context,
-                                                            VoltWebViewActivity::class.java
-                                                        )
-                                                    intent.putExtra("webViewUrl", webView_url)
-                                                    intent.putExtra("primaryColor", primary_color)
-                                                    intent.putExtra("textColor", headingTextColor)
-                                                    intent.putExtra(
-                                                        "voltPlatformCode",
-                                                        voltPlatformCode
-                                                    )
-                                                    if (target != "") intent.putExtra(
-                                                        "target",
-                                                        target
-                                                    )
-                                                    if (customerSSToken != "") intent.putExtra(
-                                                        "customerSSToken",
-                                                        customerSSToken
-                                                    )
-                                                    intent.putExtra(
-                                                        "platformAuthToken",
-                                                        platformAuthToken
-                                                    )
-                                                    startActivity(context, intent, null)
-                                                } else {
-                                                    if (mobileNumber.toString().length == 10) {
-                                                        webView_url += "&user=$mobileNumber"
-                                                    }
-                                                    val intent =
-                                                        Intent(
-                                                            context,
-                                                            VoltWebViewActivity::class.java
-                                                        )
-                                                    intent.putExtra("webViewUrl", webView_url)
-                                                    intent.putExtra("primaryColor", primary_color)
-                                                    intent.putExtra("textColor", headingTextColor)
-                                                    intent.putExtra(
-                                                        "voltPlatformCode",
-                                                        voltPlatformCode
-                                                    )
-                                                    if (target != "") intent.putExtra(
-                                                        "target",
-                                                        target
-                                                    )
-                                                    if (customerSSToken != "") intent.putExtra(
-                                                        "customerSSToken",
-                                                        customerSSToken
-                                                    )
-                                                    intent.putExtra(
-                                                        "platformAuthToken",
-                                                        platformAuthToken
-                                                    )
-                                                    startActivity(context, intent, null)
-                                                }
-                                            }
                                         },
                                         VResponse.ErrorListener { error ->
                                             Log.e("TAG", "Customer SSO Token is incorrect")
@@ -394,7 +254,7 @@ class VoltSDKContainer(
                                 // Set your custom headers here
                                 val headers = HashMap<String, String>()
                                 headers["Authorization"] = "Bearer $authToken"
-                                headers["X-AppPlatform"] = "$voltPlatformCode"
+                                headers["X-AppPlatform"] = "$partner_platform"
                                 // Add more headers as needed
                                 return headers
                             }
@@ -418,18 +278,13 @@ class VoltSDKContainer(
                         val responseData = gson.fromJson(response, ResponseData::class.java)
                         val platformSDKConfig = responseData.platformSDKConfig
                         Log.d("TAG", "Response: $platformSDKConfig")
-                        if (mobileNumber.toString().length == 10) {
                             if (platformSDKConfig != null) {
-                                if (mobileNumber.toString().length == 10) {
-                                    webView_url += "&user=$mobileNumber&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                } else {
                                     webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                }
                                 val intent = Intent(context, VoltWebViewActivity::class.java)
                                 intent.putExtra("webViewUrl", webView_url)
                                 intent.putExtra("primaryColor", primary_color)
                                 intent.putExtra("textColor", headingTextColor)
-                                intent.putExtra("voltPlatformCode", voltPlatformCode)
+                                intent.putExtra("voltPlatformCode", partner_platform)
                                 if (target != "") intent.putExtra("target", target)
                                 if (customerSSToken != "") intent.putExtra(
                                     "customerSSToken",
@@ -438,14 +293,11 @@ class VoltSDKContainer(
                                 intent.putExtra("platformAuthToken", platformAuthToken)
                                 startActivity(context, intent, null)
                             } else {
-                                if (mobileNumber.toString().length == 10) {
-                                    webView_url += "&user=$mobileNumber"
-                                }
                                 val intent = Intent(context, VoltWebViewActivity::class.java)
                                 intent.putExtra("webViewUrl", webView_url)
                                 intent.putExtra("primaryColor", primary_color)
                                 intent.putExtra("textColor", headingTextColor)
-                                intent.putExtra("voltPlatformCode", voltPlatformCode)
+                                intent.putExtra("voltPlatformCode", partner_platform)
                                 if (target != "") intent.putExtra("target", target)
                                 if (customerSSToken != "") intent.putExtra(
                                     "customerSSToken",
@@ -454,43 +306,6 @@ class VoltSDKContainer(
                                 intent.putExtra("platformAuthToken", platformAuthToken)
                                 startActivity(context, intent, null)
                             }
-                        } else {
-                            if (platformSDKConfig != null) {
-                                if (mobileNumber.toString().length == 10) {
-                                    webView_url += "&user=$mobileNumber&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                } else {
-                                    webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                }
-                                val intent = Intent(context, VoltWebViewActivity::class.java)
-                                intent.putExtra("webViewUrl", webView_url)
-                                intent.putExtra("primaryColor", primary_color)
-                                intent.putExtra("textColor", headingTextColor)
-                                intent.putExtra("voltPlatformCode", voltPlatformCode)
-                                if (target != "") intent.putExtra("target", target)
-                                if (customerSSToken != "") intent.putExtra(
-                                    "customerSSToken",
-                                    customerSSToken
-                                )
-                                intent.putExtra("platformAuthToken", platformAuthToken)
-                                startActivity(context, intent, null)
-                            } else {
-                                if (mobileNumber.toString().length == 10) {
-                                    webView_url += "&user=$mobileNumber"
-                                }
-                                val intent = Intent(context, VoltWebViewActivity::class.java)
-                                intent.putExtra("webViewUrl", webView_url)
-                                intent.putExtra("primaryColor", primary_color)
-                                intent.putExtra("textColor", headingTextColor)
-                                intent.putExtra("voltPlatformCode", voltPlatformCode)
-                                if (target != "") intent.putExtra("target", target)
-                                if (customerSSToken != "") intent.putExtra(
-                                    "customerSSToken",
-                                    customerSSToken
-                                )
-                                intent.putExtra("platformAuthToken", platformAuthToken)
-                                startActivity(context, intent, null)
-                            }
-                        }
                     },
                     VResponse.ErrorListener { error ->
                         Log.e("TAG", "Volt Platform Auth token is incorrect")
@@ -500,7 +315,7 @@ class VoltSDKContainer(
                         // Set your custom headers here
                         val headers = HashMap<String, String>()
                         headers["Authorization"] = "Bearer $authToken"
-                        headers["X-AppPlatform"] = "$voltPlatformCode"
+                        headers["X-AppPlatform"] = "$partner_platform"
                         // Add more headers as needed
                         return headers
                     }
@@ -524,18 +339,13 @@ class VoltSDKContainer(
                             val responseData = gson.fromJson(response, ResponseData::class.java)
                             val platformSDKConfig = responseData.platformSDKConfig
                             Log.d("TAG", "Response: $platformSDKConfig")
-                            if (mobileNumber.toString().length == 10) {
                                 if (platformSDKConfig != null) {
-                                    if (mobileNumber.toString().length == 10) {
-                                        webView_url += "&user=$mobileNumber&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                    } else {
                                         webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                    }
                                     val intent = Intent(context, VoltWebViewActivity::class.java)
                                     intent.putExtra("webViewUrl", webView_url)
                                     intent.putExtra("primaryColor", primary_color)
                                     intent.putExtra("textColor", headingTextColor)
-                                    intent.putExtra("voltPlatformCode", voltPlatformCode)
+                                    intent.putExtra("voltPlatformCode", partner_platform)
                                     if (target != "") intent.putExtra("target", target)
                                     if (customerSSToken != "") intent.putExtra(
                                         "customerSSToken",
@@ -544,14 +354,11 @@ class VoltSDKContainer(
                                     intent.putExtra("platformAuthToken", platformAuthToken)
                                     startActivity(context, intent, null)
                                 } else {
-                                    if (mobileNumber.toString().length == 10) {
-                                        webView_url += "&user=$mobileNumber"
-                                    }
                                     val intent = Intent(context, VoltWebViewActivity::class.java)
                                     intent.putExtra("webViewUrl", webView_url)
                                     intent.putExtra("primaryColor", primary_color)
                                     intent.putExtra("textColor", headingTextColor)
-                                    intent.putExtra("voltPlatformCode", voltPlatformCode)
+                                    intent.putExtra("voltPlatformCode", partner_platform)
                                     if (target != "") intent.putExtra("target", target)
                                     if (customerSSToken != "") intent.putExtra(
                                         "customerSSToken",
@@ -560,43 +367,6 @@ class VoltSDKContainer(
                                     intent.putExtra("platformAuthToken", platformAuthToken)
                                     startActivity(context, intent, null)
                                 }
-                            } else {
-                                if (platformSDKConfig != null) {
-                                    if (mobileNumber.toString().length == 10) {
-                                        webView_url += "&user=$mobileNumber&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                    } else {
-                                        webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
-                                    }
-                                    val intent = Intent(context, VoltWebViewActivity::class.java)
-                                    intent.putExtra("webViewUrl", webView_url)
-                                    intent.putExtra("primaryColor", primary_color)
-                                    intent.putExtra("textColor", headingTextColor)
-                                    intent.putExtra("voltPlatformCode", voltPlatformCode)
-                                    if (target != "") intent.putExtra("target", target)
-                                    if (customerSSToken != "") intent.putExtra(
-                                        "customerSSToken",
-                                        customerSSToken
-                                    )
-                                    intent.putExtra("platformAuthToken", platformAuthToken)
-                                    startActivity(context, intent, null)
-                                } else {
-                                    if (mobileNumber.toString().length == 10) {
-                                        webView_url += "&user=$mobileNumber"
-                                    }
-                                    val intent = Intent(context, VoltWebViewActivity::class.java)
-                                    intent.putExtra("webViewUrl", webView_url)
-                                    intent.putExtra("primaryColor", primary_color)
-                                    intent.putExtra("textColor", headingTextColor)
-                                    intent.putExtra("voltPlatformCode", voltPlatformCode)
-                                    if (target != "") intent.putExtra("target", target)
-                                    if (customerSSToken != "") intent.putExtra(
-                                        "customerSSToken",
-                                        customerSSToken
-                                    )
-                                    intent.putExtra("platformAuthToken", platformAuthToken)
-                                    startActivity(context, intent, null)
-                                }
-                            }
                         },
                         VResponse.ErrorListener { error ->
                             Log.e("TAG", "Volt Platform Auth token is incorrect")
@@ -606,7 +376,7 @@ class VoltSDKContainer(
                             // Set your custom headers here
                             val headers = HashMap<String, String>()
                             headers["Authorization"] = "Bearer $authToken"
-                            headers["X-AppPlatform"] = "$voltPlatformCode"
+                            headers["X-AppPlatform"] = "$partner_platform"
                             // Add more headers as needed
                             return headers
                         }
@@ -623,7 +393,7 @@ class VoltSDKContainer(
             "&primaryColor=$primary_color" +
             "&target=${target?.trim()}" +
             "&ssoToken=$customerSSToken" +
-            "&voltPlatformCode=$voltPlatformCode"
+            "&voltPlatformCode=$partner_platform"
 
 
     fun logoutSDK() {

@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<ScrollView
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,18 +22,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="12dp"
-                android:textSize="18dp"
-                android:text="Primary Color" />
+                android:text="Primary Color"
+                android:textSize="18dp" />
 
             <EditText
                 android:id="@+id/et_primaryColor"
                 android:layout_width="390dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:textSize="18dp"
                 android:hint="primary color"
                 android:inputType="textPersonName"
-                android:text="1434CB" />
+                android:text="1434CB"
+                android:textSize="18dp" />
         </LinearLayout>
 
 
@@ -49,8 +48,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="12dp"
-                android:textSize="18dp"
-                android:text="Partner Platform" />
+                android:text="Partner Platform Code"
+                android:textSize="18dp" />
 
             <EditText
                 android:id="@+id/et_platform"
@@ -58,19 +57,24 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Partner platform"
-                android:textSize="18dp"
                 android:inputType="textPersonName"
-                />
+                android:textSize="18dp" />
         </LinearLayout>
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="22dp"
-            android:layout_marginRight="16dp"
-            android:orientation="vertical">
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:text="Platform Auth Token"
+                android:textSize="18dp" />
 
             <EditText
                 android:id="@+id/et_platform_auth_token"
@@ -78,17 +82,48 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="22dp"
                 android:ems="10"
-                android:textSize="18dp"
-                android:hint="Volt Platform Auth Token *" />
+                android:hint="Volt Platform Auth Token"
+                android:textSize="18dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:text="Customer SSO Token"
+                android:textSize="18dp" />
+
             <EditText
                 android:id="@+id/et_sso_token"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="22dp"
                 android:ems="10"
-                android:textSize="18dp"
-                android:hint="Customer SSO Token" />
+                android:hint="Customer SSO Token"
+                android:textSize="18dp" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="12dp"
+                android:text="Customer Code"
+                android:textSize="18dp" />
 
             <EditText
                 android:id="@+id/et_customer_code"
@@ -96,20 +131,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="22dp"
                 android:ems="10"
-                android:textSize="18dp"
-                android:hint="Customer Code" />
+                android:hint="Customer Code"
+                android:textSize="18dp" />
 
+        </LinearLayout>
 
-            <EditText
-                android:id="@+id/et_mobile"
-                android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="22dp"
-                android:ems="10"
-                android:textSize="18dp"
-                android:hint="Mobile Number"
-                android:inputType="phone" />
-
+                android:layout_marginRight="12dp"
+                android:text="Target"
+                android:textSize="18dp" />
 
             <EditText
                 android:id="@+id/et_target"
@@ -118,78 +157,95 @@
                 android:layout_marginBottom="22dp"
                 android:ems="10"
                 android:hint="Target"
-                android:textSize="18dp"
-                android:inputType="textPersonName" />
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginLeft="4dp"
-                android:layout_marginBottom="12dp"
-                android:gravity="center"
-                >
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Environment"
-                    android:textSize="16dp"
-                    android:layout_marginRight="8dp"
-                    />
-                <RadioButton
-                    android:id="@+id/stagingRB"
-                    android:layout_width="104dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Staging"
-                    android:checked="true"
-                    android:textSize="16dp"
-                    />
-                <RadioButton
-                    android:id="@+id/productionRB"
-                    android:layout_width="140dp"
-                    android:layout_height="wrap_content"
-                    android:text="Production"
-                    android:textSize="16dp"
-                    />
-            </LinearLayout>
+                android:inputType="textPersonName"
+                android:textSize="18dp" />
 
         </LinearLayout>
 
-    <Button
-        android:id="@+id/bt_volt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="22dp"
-        android:text="Open Volt SDK" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:layout_marginBottom="16dp"
-        android:paddingBottom="8dp"
-        android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/bt_delete_user"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
-            android:text="Delete User" />
-
-        <Button
-            android:id="@+id/logoutButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
             android:layout_marginLeft="4dp"
-            android:text="Clear" />
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:text="Environment"
+                android:textSize="16dp" />
+
+            <RadioButton
+                android:id="@+id/stagingRB"
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:checked="true"
+                android:text="Staging"
+                android:textSize="16dp" />
+
+            <RadioButton
+                android:id="@+id/productionRB"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:text="Production"
+                android:textSize="16dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:text="Show header"
+                android:textSize="16dp" />
+
+            <RadioButton
+                android:id="@+id/yesHeaderRB"
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:checked="true"
+                android:text="Yes"
+                android:textSize="16dp" />
+
+            <RadioButton
+                android:id="@+id/noHeaderRB"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:text="No"
+                android:textSize="16dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/bt_volt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="Open Volt SDK" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:paddingBottom="8dp">
+
+
+        </LinearLayout>
 
 
     </LinearLayout>
-
-
-</LinearLayout>
 
 </ScrollView>
