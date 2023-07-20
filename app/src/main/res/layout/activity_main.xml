@@ -5,41 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     >
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="22dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="12dp"
-                android:textSize="18dp"
-                android:text="Ref code" />
-
-
-            <EditText
-                android:id="@+id/et_ref"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:textSize="18dp"
-                android:hint="Ref Cofe"
-                android:inputType="textPersonName"
-                 />
-
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -128,25 +99,6 @@
                 android:textSize="18dp"
                 android:hint="Customer Code" />
 
-            <EditText
-                android:id="@+id/et_dob"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="22dp"
-                android:ems="10"
-                android:textSize="18dp"
-                android:hint="Date of Birth"
-                android:inputType="textPersonName" />
-
-            <EditText
-                android:id="@+id/et_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="22dp"
-                android:ems="10"
-                android:textSize="18dp"
-                android:hint="Email ID"
-                android:inputType="textPersonName" />
 
             <EditText
                 android:id="@+id/et_mobile"
@@ -158,15 +110,6 @@
                 android:hint="Mobile Number"
                 android:inputType="phone" />
 
-            <EditText
-                android:id="@+id/et_pan"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="22dp"
-                android:ems="10"
-                android:textSize="18dp"
-                android:hint="PAN Number"
-                android:inputType="textPersonName" />
 
             <EditText
                 android:id="@+id/et_target"
@@ -212,43 +155,6 @@
                     />
             </LinearLayout>
 
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tracking"
-                android:textSize="18dp"
-                android:layout_marginTop="22dp"
-                android:layout_marginBottom="22dp"
-                />
-
-            <EditText
-                android:id="@+id/et_utmSource"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="22dp"
-                android:textSize="18dp"
-                android:ems="10"
-                android:hint="UTM Source" />
-
-            <EditText
-                android:id="@+id/et_utmCampaign"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="22dp"
-                android:textSize="18dp"
-                android:ems="10"
-                android:hint="UTM Campaign" />
-
-            <EditText
-                android:id="@+id/et_utmToken"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18dp"
-                android:ems="10"
-                android:hint="UTM Token" />
-
-
         </LinearLayout>
 
     <Button
@@ -256,7 +162,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="22dp"
-        android:text="Create Volt SDK Instance" />
+        android:text="Open Volt SDK" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -280,23 +186,8 @@
             android:layout_marginLeft="4dp"
             android:text="Clear" />
 
-        <Button
-            android:id="@+id/bt_invokeVoltSdk"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
-            android:layout_marginLeft="4dp"
-            android:text="Invoke SDK" />
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/bt_createApp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Create App"
-     />
 
 
 </LinearLayout>

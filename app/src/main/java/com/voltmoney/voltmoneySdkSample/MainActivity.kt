@@ -15,19 +15,21 @@ import com.google.gson.Gson
 import com.voltmoney.voltmoneySdkSample.databinding.ActivityMainBinding
 import com.voltmoney.voltsdk.VoltAPIResponse
 import com.voltmoney.voltsdk.VoltSDKContainer
+import com.voltmoney.voltsdk.models.ENVIRONMENT
 import com.voltmoney.voltsdk.models.PreCreateAppResponse
-import com.voltmoney.voltsdk.models.VOLTENV
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import javax.security.auth.login.LoginException
 
 
 class MainActivity : AppCompatActivity(), VoltAPIResponse {
     private var voltSDKContainer: VoltSDKContainer? = null
     private var preCreateAppResponse: PreCreateAppResponse? = null
     private lateinit var requestQueue: RequestQueue
+    var selectedEnvironment: ENVIRONMENT = ENVIRONMENT.STAGING
 
 
     lateinit var binding: ActivityMainBinding
@@ -35,26 +37,18 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        var showVoltDefaultHeader: Boolean
-        var showVoltLogo: Boolean
-        var customLogoUrl: String
-        var customSupportNumber: String
-        var isStagingChecked: Boolean = true
-        var isProductionChecked: Boolean = false
         requestQueue = Volley.newRequestQueue(this)
 
 
         binding.stagingRB.setOnCheckedChangeListener { button, b ->
             if (binding.stagingRB.isChecked) {
-                isStagingChecked = true
-                isProductionChecked = false
+                selectedEnvironment = ENVIRONMENT.STAGING
                 binding.productionRB.isChecked = false
             }
         }
         binding.productionRB.setOnCheckedChangeListener { button, b ->
             if (binding.productionRB.isChecked) {
-                isStagingChecked = false
-                isProductionChecked = true
+                selectedEnvironment = ENVIRONMENT.PRODUCTION
                 binding.stagingRB.isChecked = false
             }
         }
@@ -66,11 +60,9 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                     val target = binding.etTarget.text.toString()
                     val customerSSOToken = binding.etSsoToken.text.toString()
                     val voltPlatformCode = binding.etPlatform.text.toString()
-                    val utmSource = binding.etUtmSource.text.toString()
-                    val utmCampaign = binding.etUtmCampaign.text.toString()
-                    val utmToken = binding.etUtmToken.text.toString()
                     val platformAuthToken = binding.etPlatformAuthToken.text.toString()
                     val customerCode = binding.etCustomerCode.text.toString()
+                    val mobileNumber = binding.etMobile.text.toString()
 
                     if (platformAuthToken == null) {
                         Log.e("TAG", "Please enter Platform Auth Token")
@@ -83,21 +75,15 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                     if (iter.length > 2) {
                                         VoltSDKContainer(
                                             this,
-                                            "volt-sdk-staging@voltmoney.in",
-                                            "e10b6eaf2e334d1b955434e25fcfe2d8",
                                             iter,
                                             it,
-                                            null,
-                                            binding.etRef.text.toString(),
-                                            isStagingChecked,
+                                            selectedEnvironment,
                                             "FFFFFF",
+                                            mobileNumber,
                                             target,
                                             customerSSOToken,
                                             customerCode,
                                             voltPlatformCode,
-                                            utmSource,
-                                            utmCampaign,
-                                            utmToken,
                                             platformAuthToken,
                                         )
                                     }
@@ -110,21 +96,15 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                         if (iter.length > 2) {
                                             VoltSDKContainer(
                                                 this,
-                                                "volt-sdk-staging@voltmoney.in",
-                                                "e10b6eaf2e334d1b955434e25fcfe2d8",
                                                 iter,
                                                 it,
-                                                null,
-                                                binding.etRef.text.toString(),
-                                                isStagingChecked,
+                                                selectedEnvironment,
                                                 "FFFFFF",
+                                                mobileNumber,
                                                 target,
                                                 customerSSOToken,
                                                 customerCode,
                                                 voltPlatformCode,
-                                                utmSource,
-                                                utmCampaign,
-                                                utmToken,
                                                 platformAuthToken,
                                             )
                                         }
@@ -142,21 +122,15 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                         if (it1.length > 2) {
                             VoltSDKContainer(
                                 this,
-                                "volt-sdk-staging@voltmoney.in",
-                                "e10b6eaf2e334d1b955434e25fcfe2d8",
                                 it1,
                                 it,
-                                null,
-                                binding.etRef.text.toString(),
-                                isStagingChecked,
+                                selectedEnvironment,
                                 "FFFFFF",
+                                mobileNumber,
                                 target,
                                 customerSSOToken,
                                 customerCode,
                                 voltPlatformCode,
-                                utmSource,
-                                utmCampaign,
-                                utmToken,
                                 platformAuthToken,
                             )
 
@@ -176,40 +150,9 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                 }
             }
         }
-        binding.btCreateApp.setOnClickListener {
-            if (voltSDKContainer == null) {
-                Log.e("TAG", "Please create VoltInstance first")
-                Toast.makeText(this, "Please create VoltInstance first", Toast.LENGTH_SHORT).show()
-            }
-            if (binding.etMobile.text.toString().length < 10) {
-                Log.e("TAG", "Please input correct mobile number")
-                Toast.makeText(this, "Please input correct mobile number", Toast.LENGTH_SHORT)
-                    .show()
-            } else {
-                voltSDKContainer?.preCreateApplication(
-                    binding.etDob.text.toString(),
-                    binding.etEmail.text.toString(),
-                    binding.etMobile.text.toString().toLong(),
-                    binding.etPan.text.toString()
-                )
-            }
-        }
 
         binding.logoutButton.setOnClickListener {
             voltSDKContainer?.logoutSDK()
-        }
-        binding.btInvokeVoltSdk.setOnClickListener {
-            voltSDKContainer.let {
-                if (binding.etMobile.text.toString().length == 10) {
-                    it?.initVoltSdk(
-                        binding.etMobile.text.toString().toLong(),
-                    )
-                } else {
-                    it?.initVoltSdk(
-                        null,
-                    )
-                }
-            }
         }
 
         binding.btDeleteUser.setOnClickListener {

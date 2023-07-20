@@ -5,8 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.voltmoney.voltsdk.VoltSDKContainer;
-import com.voltmoney.voltsdk.models.VOLTENV;
-
+import com.voltmoney.voltsdk.models.ENVIRONMENT;
 
 public class MainActivityForJava extends AppCompatActivity {
 
@@ -14,8 +13,7 @@ public class MainActivityForJava extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        VOLTENV v = VOLTENV.valueOf("PRODUCTION");
-        VoltSDKContainer container = new VoltSDKContainer(this,"","","","","","", false, "", "", "", "", "", "", "", "", "");
+        VoltSDKContainer container = new VoltSDKContainer(this,"","", ENVIRONMENT.PRODUCTION,"","", "","", "", "", "");
 
     }
 }

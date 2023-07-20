@@ -22,113 +22,21 @@ import com.android.volley.Response as VResponse
 
 class VoltSDKContainer(
     private val context: Context,
-    private val app_key: String,
-    private val app_secret: String,
     private val partner_platform: String,
     private val primary_color: String?,
-    private val secondary_color: String?,
-    private val ref: String?,
-    private var isStagingChecked: Boolean,
+    private var environment: ENVIRONMENT,
     private var headingTextColor: String = "",
+    private var mobileNumber: String?,
     private var target: String?,
     private var customerSSToken: String?,
     private var customerCode: String?,
     private var voltPlatformCode: String?,
-    private var utmSource: String?,
-    private var utmCampaign: String?,
-    private var utmToken: String?,
     private var platformAuthToken: String?,
-
-
     ) {
-    private var authToken: String? = null
-    private var voltAPI: VoltAPI = RetrofitHelper.getInstance().create(VoltAPI::class.java)
-
     var url =
-        if (isStagingChecked) "https://app.staging.voltmoney.in/?partnerplatform" else "https://app.voltmoney.in/?partnerplatform"
+        if (environment == ENVIRONMENT.STAGING) "https://app.staging.voltmoney.in/?partnerplatform" else "https://app.voltmoney.in/?partnerplatform"
 
-    var webView_url: String = "$url" +
-            "ref=$ref" +
-            "&platform=$partner_platform" +
-            "&primaryColor=$primary_color" +
-            "&target=${target?.trim()}" +
-            "&ssoToken=$customerSSToken" +
-            "&voltPlatformCode=$voltPlatformCode" +
-            "&utmSource=${if (utmSource == null) "" else utmSource}" +
-            "&utmCampaign=${if (utmCampaign == null) "" else utmCampaign}" +
-            "&utmToken=${if (utmToken == null) "" else utmToken}"
-
-    fun preCreateApplication(dob: String, email: String, mobileNumber: Long, pan: String) {
-        val createApplicationData =
-            CreateApplicationData(CustomerDetails(dob, email, mobileNumber, pan))
-        voltAPI.getAuthToken(AuthData(app_key, app_secret))
-            .enqueue(object : Callback<PreCreateAppResponse> {
-                override fun onResponse(
-                    call: Call<PreCreateAppResponse>,
-                    response: Response<PreCreateAppResponse>
-                ) {
-                    if (response.body() != null && response.code() == 200) {
-                        authToken = response.body()!!.auth_token.toString()
-                        /* val createAppResponse = response.body() as PreCreateAppResponse
-                         Log.d("ResVolt", createAppResponse.auth_token!!)
-                         (context as VoltAPIResponse).createAppAPIResponse(createAppResponse,null)*/
-                        voltAPI.createApplication(
-                            createApplicationData,
-                            "Bearer $authToken",
-                            partner_platform
-                        ).enqueue(object : Callback<PreCreateAppResponse> {
-                            override fun onResponse(
-                                call: Call<PreCreateAppResponse>,
-                                response: Response<PreCreateAppResponse>
-                            ) {
-                                if (response.body() != null) {
-                                    val preCreateAppResponse =
-                                        response.body() as PreCreateAppResponse
-                                    Log.d("ResVolt", response.code().toString())
-                                    (context as VoltAPIResponse).preCreateAppAPIResponse(
-                                        preCreateAppResponse,
-                                        null
-                                    )
-                                } else {
-                                    if (response.errorBody() != null) {
-                                        val jObjError = JSONObject(response.errorBody()!!.string())
-                                        val errorRes = jObjError.getString("message")
-                                        (context as VoltAPIResponse).preCreateAppAPIResponse(
-                                            null,
-                                            errorRes
-                                        )
-                                    }
-                                }
-                            }
-
-                            override fun onFailure(call: Call<PreCreateAppResponse>, t: Throwable) {
-                                Log.d("ResVolt", t.toString())
-                            }
-                        })
-                    } else {
-                        if (response.errorBody() != null) {
-                            val jObjError = JSONObject(response.errorBody()!!.string())
-                            val errorRes = jObjError.getString("message")
-                            (context as VoltAPIResponse).preCreateAppAPIResponse(null, errorRes)
-                        } else {
-                            (context as VoltAPIResponse).preCreateAppAPIResponse(
-                                null,
-                                "Invalid Credentials"
-                            )
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<PreCreateAppResponse>, t: Throwable) {
-                    t.localizedMessage?.let { Log.d("ResVolt", it) }
-                }
-            })
-        //write logic for creating application and upon success response from api update webView_url and open VoltWebViewActivity
-    }
-
-    fun initVoltSdk(
-        mobileNumber: Long?,
-    ) {
+    init {
         if (platformAuthToken?.trim() == null || platformAuthToken?.trim() == "") {
             Log.e("TAG", "Please enter Platform Auth Token")
         } else if (customerSSToken != "") {
@@ -137,7 +45,7 @@ class VoltSDKContainer(
             } else {
                 if (target?.trim() == "") {
                     var getDetailsURL =
-                        if (isStagingChecked) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
+                        if (environment === ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
                     val requestQueue: RequestQueue =
                         Volley.newRequestQueue(context)
                     val stringRequest = object : StringRequest(
@@ -150,7 +58,7 @@ class VoltSDKContainer(
                             val platformSDKConfig = responseData.platformSDKConfig
                             Log.d("TAG", "Response: $platformSDKConfig")
                             var validateSSOTokenURL =
-                                if (isStagingChecked) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
+                                if (environment === ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
                             val requestQueue: RequestQueue =
                                 Volley.newRequestQueue(context)
 
@@ -189,18 +97,6 @@ class VoltSDKContainer(
                                                     "customerSSToken",
                                                     customerSSToken
                                                 )
-                                                if (utmSource != "") intent.putExtra(
-                                                    "utmSource",
-                                                    utmSource
-                                                )
-                                                if (utmCampaign != "") intent.putExtra(
-                                                    "utmCampaign",
-                                                    utmCampaign
-                                                )
-                                                if (utmToken != "") intent.putExtra(
-                                                    "utmToken",
-                                                    utmToken
-                                                )
                                                 intent.putExtra(
                                                     "platformAuthToken",
                                                     platformAuthToken
@@ -227,18 +123,6 @@ class VoltSDKContainer(
                                                 if (customerSSToken != "") intent.putExtra(
                                                     "customerSSToken",
                                                     customerSSToken
-                                                )
-                                                if (utmSource != "") intent.putExtra(
-                                                    "utmSource",
-                                                    utmSource
-                                                )
-                                                if (utmCampaign != "") intent.putExtra(
-                                                    "utmCampaign",
-                                                    utmCampaign
-                                                )
-                                                if (utmToken != "") intent.putExtra(
-                                                    "utmToken",
-                                                    utmToken
                                                 )
                                                 intent.putExtra(
                                                     "platformAuthToken",
@@ -267,18 +151,6 @@ class VoltSDKContainer(
                                                     "customerSSToken",
                                                     customerSSToken
                                                 )
-                                                if (utmSource != "") intent.putExtra(
-                                                    "utmSource",
-                                                    utmSource
-                                                )
-                                                if (utmCampaign != "") intent.putExtra(
-                                                    "utmCampaign",
-                                                    utmCampaign
-                                                )
-                                                if (utmToken != "") intent.putExtra(
-                                                    "utmToken",
-                                                    utmToken
-                                                )
                                                 intent.putExtra(
                                                     "platformAuthToken",
                                                     platformAuthToken
@@ -301,18 +173,6 @@ class VoltSDKContainer(
                                                 if (customerSSToken != "") intent.putExtra(
                                                     "customerSSToken",
                                                     customerSSToken
-                                                )
-                                                if (utmSource != "") intent.putExtra(
-                                                    "utmSource",
-                                                    utmSource
-                                                )
-                                                if (utmCampaign != "") intent.putExtra(
-                                                    "utmCampaign",
-                                                    utmCampaign
-                                                )
-                                                if (utmToken != "") intent.putExtra(
-                                                    "utmToken",
-                                                    utmToken
                                                 )
                                                 intent.putExtra(
                                                     "platformAuthToken",
@@ -357,7 +217,7 @@ class VoltSDKContainer(
                         Log.e("TAG", "The target page does not exist")
                     } else {
                         var getDetailsURL =
-                            if (isStagingChecked) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
+                            if (environment === ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
                         val requestQueue: RequestQueue =
                             Volley.newRequestQueue(context)
                         val stringRequest = object : StringRequest(
@@ -370,7 +230,7 @@ class VoltSDKContainer(
                                 val platformSDKConfig = responseData.platformSDKConfig
                                 Log.d("TAG", "Response: $platformSDKConfig")
                                 var validateSSOTokenURL =
-                                    if (isStagingChecked) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
+                                    if (environment == ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
                                 val requestQueue: RequestQueue =
                                     Volley.newRequestQueue(context)
 
@@ -411,18 +271,6 @@ class VoltSDKContainer(
                                                         "customerSSToken",
                                                         customerSSToken
                                                     )
-                                                    if (utmSource != "") intent.putExtra(
-                                                        "utmSource",
-                                                        utmSource
-                                                    )
-                                                    if (utmCampaign != "") intent.putExtra(
-                                                        "utmCampaign",
-                                                        utmCampaign
-                                                    )
-                                                    if (utmToken != "") intent.putExtra(
-                                                        "utmToken",
-                                                        utmToken
-                                                    )
                                                     intent.putExtra(
                                                         "platformAuthToken",
                                                         platformAuthToken
@@ -451,18 +299,6 @@ class VoltSDKContainer(
                                                     if (customerSSToken != "") intent.putExtra(
                                                         "customerSSToken",
                                                         customerSSToken
-                                                    )
-                                                    if (utmSource != "") intent.putExtra(
-                                                        "utmSource",
-                                                        utmSource
-                                                    )
-                                                    if (utmCampaign != "") intent.putExtra(
-                                                        "utmCampaign",
-                                                        utmCampaign
-                                                    )
-                                                    if (utmToken != "") intent.putExtra(
-                                                        "utmToken",
-                                                        utmToken
                                                     )
                                                     intent.putExtra(
                                                         "platformAuthToken",
@@ -497,18 +333,6 @@ class VoltSDKContainer(
                                                         "customerSSToken",
                                                         customerSSToken
                                                     )
-                                                    if (utmSource != "") intent.putExtra(
-                                                        "utmSource",
-                                                        utmSource
-                                                    )
-                                                    if (utmCampaign != "") intent.putExtra(
-                                                        "utmCampaign",
-                                                        utmCampaign
-                                                    )
-                                                    if (utmToken != "") intent.putExtra(
-                                                        "utmToken",
-                                                        utmToken
-                                                    )
                                                     intent.putExtra(
                                                         "platformAuthToken",
                                                         platformAuthToken
@@ -537,18 +361,6 @@ class VoltSDKContainer(
                                                     if (customerSSToken != "") intent.putExtra(
                                                         "customerSSToken",
                                                         customerSSToken
-                                                    )
-                                                    if (utmSource != "") intent.putExtra(
-                                                        "utmSource",
-                                                        utmSource
-                                                    )
-                                                    if (utmCampaign != "") intent.putExtra(
-                                                        "utmCampaign",
-                                                        utmCampaign
-                                                    )
-                                                    if (utmToken != "") intent.putExtra(
-                                                        "utmToken",
-                                                        utmToken
                                                     )
                                                     intent.putExtra(
                                                         "platformAuthToken",
@@ -594,7 +406,7 @@ class VoltSDKContainer(
         } else {
             if (target == "") {
                 var getDetailsURL =
-                    if (isStagingChecked) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
+                    if (environment == ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
                 Log.d("TAG", "BHAV initVoltSdk: ${getDetailsURL}")
                 val requestQueue: RequestQueue =
                     Volley.newRequestQueue(context)
@@ -623,12 +435,6 @@ class VoltSDKContainer(
                                     "customerSSToken",
                                     customerSSToken
                                 )
-                                if (utmSource != "") intent.putExtra("utmSource", utmSource)
-                                if (utmCampaign != "") intent.putExtra(
-                                    "utmCampaign",
-                                    utmCampaign
-                                )
-                                if (utmToken != "") intent.putExtra("utmToken", utmToken)
                                 intent.putExtra("platformAuthToken", platformAuthToken)
                                 startActivity(context, intent, null)
                             } else {
@@ -645,12 +451,6 @@ class VoltSDKContainer(
                                     "customerSSToken",
                                     customerSSToken
                                 )
-                                if (utmSource != "") intent.putExtra("utmSource", utmSource)
-                                if (utmCampaign != "") intent.putExtra(
-                                    "utmCampaign",
-                                    utmCampaign
-                                )
-                                if (utmToken != "") intent.putExtra("utmToken", utmToken)
                                 intent.putExtra("platformAuthToken", platformAuthToken)
                                 startActivity(context, intent, null)
                             }
@@ -671,12 +471,6 @@ class VoltSDKContainer(
                                     "customerSSToken",
                                     customerSSToken
                                 )
-                                if (utmSource != "") intent.putExtra("utmSource", utmSource)
-                                if (utmCampaign != "") intent.putExtra(
-                                    "utmCampaign",
-                                    utmCampaign
-                                )
-                                if (utmToken != "") intent.putExtra("utmToken", utmToken)
                                 intent.putExtra("platformAuthToken", platformAuthToken)
                                 startActivity(context, intent, null)
                             } else {
@@ -693,12 +487,6 @@ class VoltSDKContainer(
                                     "customerSSToken",
                                     customerSSToken
                                 )
-                                if (utmSource != "") intent.putExtra("utmSource", utmSource)
-                                if (utmCampaign != "") intent.putExtra(
-                                    "utmCampaign",
-                                    utmCampaign
-                                )
-                                if (utmToken != "") intent.putExtra("utmToken", utmToken)
                                 intent.putExtra("platformAuthToken", platformAuthToken)
                                 startActivity(context, intent, null)
                             }
@@ -724,7 +512,7 @@ class VoltSDKContainer(
                     Log.e("TAG", "The target page does not exist")
                 } else {
                     var getDetailsURL =
-                        if (isStagingChecked) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
+                        if (environment == ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
                     Log.d("TAG", "BHAV initVoltSdk: ${getDetailsURL}")
                     val requestQueue: RequestQueue =
                         Volley.newRequestQueue(context)
@@ -753,12 +541,6 @@ class VoltSDKContainer(
                                         "customerSSToken",
                                         customerSSToken
                                     )
-                                    if (utmSource != "") intent.putExtra("utmSource", utmSource)
-                                    if (utmCampaign != "") intent.putExtra(
-                                        "utmCampaign",
-                                        utmCampaign
-                                    )
-                                    if (utmToken != "") intent.putExtra("utmToken", utmToken)
                                     intent.putExtra("platformAuthToken", platformAuthToken)
                                     startActivity(context, intent, null)
                                 } else {
@@ -775,12 +557,6 @@ class VoltSDKContainer(
                                         "customerSSToken",
                                         customerSSToken
                                     )
-                                    if (utmSource != "") intent.putExtra("utmSource", utmSource)
-                                    if (utmCampaign != "") intent.putExtra(
-                                        "utmCampaign",
-                                        utmCampaign
-                                    )
-                                    if (utmToken != "") intent.putExtra("utmToken", utmToken)
                                     intent.putExtra("platformAuthToken", platformAuthToken)
                                     startActivity(context, intent, null)
                                 }
@@ -801,12 +577,6 @@ class VoltSDKContainer(
                                         "customerSSToken",
                                         customerSSToken
                                     )
-                                    if (utmSource != "") intent.putExtra("utmSource", utmSource)
-                                    if (utmCampaign != "") intent.putExtra(
-                                        "utmCampaign",
-                                        utmCampaign
-                                    )
-                                    if (utmToken != "") intent.putExtra("utmToken", utmToken)
                                     intent.putExtra("platformAuthToken", platformAuthToken)
                                     startActivity(context, intent, null)
                                 } else {
@@ -823,12 +593,6 @@ class VoltSDKContainer(
                                         "customerSSToken",
                                         customerSSToken
                                     )
-                                    if (utmSource != "") intent.putExtra("utmSource", utmSource)
-                                    if (utmCampaign != "") intent.putExtra(
-                                        "utmCampaign",
-                                        utmCampaign
-                                    )
-                                    if (utmToken != "") intent.putExtra("utmToken", utmToken)
                                     intent.putExtra("platformAuthToken", platformAuthToken)
                                     startActivity(context, intent, null)
                                 }
@@ -851,8 +615,16 @@ class VoltSDKContainer(
                 }
             }
         }
-
+        Log.e("TAG", "BVH entered VoltSDKContainer", )
     }
+
+    var webView_url: String = "$url" +
+            "&platform=$partner_platform" +
+            "&primaryColor=$primary_color" +
+            "&target=${target?.trim()}" +
+            "&ssoToken=$customerSSToken" +
+            "&voltPlatformCode=$voltPlatformCode"
+
 
     fun logoutSDK() {
         WebStorage.getInstance().deleteAllData()
