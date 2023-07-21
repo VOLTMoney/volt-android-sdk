@@ -14,9 +14,6 @@ import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.voltmoney.voltsdk.models.*
 import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import com.android.volley.Response as VResponse
 
 
@@ -30,6 +27,7 @@ class VoltSDKContainer(
     private var target: String?,
     private var customerSSToken: String?,
     private var customerCode: String?,
+    private var showHeader: String?,
     ) {
     var url =
         if (environment == ENVIRONMENT.STAGING) "https://app.staging.voltmoney.in/?partnerplatform" else "https://app.voltmoney.in/?partnerplatform"
@@ -54,7 +52,6 @@ class VoltSDKContainer(
                             val gson = Gson()
                             val responseData = gson.fromJson(response, ResponseData::class.java)
                             val platformSDKConfig = responseData.platformSDKConfig
-                            Log.d("TAG", "Response: $platformSDKConfig")
                             var validateSSOTokenURL =
                                 if (environment === ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
                             val requestQueue: RequestQueue =
@@ -70,13 +67,14 @@ class VoltSDKContainer(
                                     validateSSOTokenURL,
                                     jsonBody,
                                     VResponse.Listener { response ->
-                                            if (platformSDKConfig != null) {
+                                        if (platformSDKConfig != null) {
                                                     webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
                                                 val intent =
                                                     Intent(context, VoltWebViewActivity::class.java)
                                                 intent.putExtra("webViewUrl", webView_url)
                                                 intent.putExtra("primaryColor", primary_color)
                                                 intent.putExtra("textColor", headingTextColor)
+                                                intent.putExtra("showHeader", showHeader )
                                                 intent.putExtra(
                                                     "voltPlatformCode",
                                                     partner_platform
@@ -97,6 +95,7 @@ class VoltSDKContainer(
                                                 intent.putExtra("webViewUrl", webView_url)
                                                 intent.putExtra("primaryColor", primary_color)
                                                 intent.putExtra("textColor", headingTextColor)
+                                                intent.putExtra("showHeader", showHeader)
                                                 intent.putExtra(
                                                     "voltPlatformCode",
                                                     partner_platform
@@ -159,7 +158,6 @@ class VoltSDKContainer(
                                 val gson = Gson()
                                 val responseData = gson.fromJson(response, ResponseData::class.java)
                                 val platformSDKConfig = responseData.platformSDKConfig
-                                Log.d("TAG", "Response: $platformSDKConfig")
                                 var validateSSOTokenURL =
                                     if (environment == ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
                                 val requestQueue: RequestQueue =
@@ -175,7 +173,7 @@ class VoltSDKContainer(
                                         validateSSOTokenURL,
                                         jsonBody,
                                         VResponse.Listener { response ->
-                                                if (platformSDKConfig != null) {
+                                            if (platformSDKConfig != null) {
                                                         webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
                                                     val intent =
                                                         Intent(
@@ -185,6 +183,7 @@ class VoltSDKContainer(
                                                     intent.putExtra("webViewUrl", webView_url)
                                                     intent.putExtra("primaryColor", primary_color)
                                                     intent.putExtra("textColor", headingTextColor)
+                                                    intent.putExtra("showHeader", showHeader)
                                                     intent.putExtra(
                                                         "voltPlatformCode",
                                                         partner_platform
@@ -211,6 +210,7 @@ class VoltSDKContainer(
                                                     intent.putExtra("webViewUrl", webView_url)
                                                     intent.putExtra("primaryColor", primary_color)
                                                     intent.putExtra("textColor", headingTextColor)
+                                                    intent.putExtra("showHeader", showHeader)
                                                     intent.putExtra(
                                                         "voltPlatformCode",
                                                         partner_platform
@@ -267,7 +267,6 @@ class VoltSDKContainer(
             if (target == "") {
                 var getDetailsURL =
                     if (environment == ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
-                Log.d("TAG", "BHAV initVoltSdk: ${getDetailsURL}")
                 val requestQueue: RequestQueue =
                     Volley.newRequestQueue(context)
                 val stringRequest = object : StringRequest(Request.Method.GET,
@@ -277,14 +276,14 @@ class VoltSDKContainer(
                         val gson = Gson()
                         val responseData = gson.fromJson(response, ResponseData::class.java)
                         val platformSDKConfig = responseData.platformSDKConfig
-                        Log.d("TAG", "Response: $platformSDKConfig")
-                            if (platformSDKConfig != null) {
+                        if (platformSDKConfig != null) {
                                     webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
                                 val intent = Intent(context, VoltWebViewActivity::class.java)
                                 intent.putExtra("webViewUrl", webView_url)
                                 intent.putExtra("primaryColor", primary_color)
                                 intent.putExtra("textColor", headingTextColor)
                                 intent.putExtra("voltPlatformCode", partner_platform)
+                                intent.putExtra("showHeader", showHeader)
                                 if (target != "") intent.putExtra("target", target)
                                 if (customerSSToken != "") intent.putExtra(
                                     "customerSSToken",
@@ -298,6 +297,7 @@ class VoltSDKContainer(
                                 intent.putExtra("primaryColor", primary_color)
                                 intent.putExtra("textColor", headingTextColor)
                                 intent.putExtra("voltPlatformCode", partner_platform)
+                                intent.putExtra("showHeader", showHeader)
                                 if (target != "") intent.putExtra("target", target)
                                 if (customerSSToken != "") intent.putExtra(
                                     "customerSSToken",
@@ -328,7 +328,6 @@ class VoltSDKContainer(
                 } else {
                     var getDetailsURL =
                         if (environment == ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
-                    Log.d("TAG", "BHAV initVoltSdk: ${getDetailsURL}")
                     val requestQueue: RequestQueue =
                         Volley.newRequestQueue(context)
                     val stringRequest = object : StringRequest(Request.Method.GET,
@@ -338,14 +337,14 @@ class VoltSDKContainer(
                             val gson = Gson()
                             val responseData = gson.fromJson(response, ResponseData::class.java)
                             val platformSDKConfig = responseData.platformSDKConfig
-                            Log.d("TAG", "Response: $platformSDKConfig")
-                                if (platformSDKConfig != null) {
+                            if (platformSDKConfig != null) {
                                         webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
                                     val intent = Intent(context, VoltWebViewActivity::class.java)
                                     intent.putExtra("webViewUrl", webView_url)
                                     intent.putExtra("primaryColor", primary_color)
                                     intent.putExtra("textColor", headingTextColor)
                                     intent.putExtra("voltPlatformCode", partner_platform)
+                                    intent.putExtra("showHeader", showHeader)
                                     if (target != "") intent.putExtra("target", target)
                                     if (customerSSToken != "") intent.putExtra(
                                         "customerSSToken",
@@ -359,6 +358,7 @@ class VoltSDKContainer(
                                     intent.putExtra("primaryColor", primary_color)
                                     intent.putExtra("textColor", headingTextColor)
                                     intent.putExtra("voltPlatformCode", partner_platform)
+                                    intent.putExtra("showHeader", showHeader)
                                     if (target != "") intent.putExtra("target", target)
                                     if (customerSSToken != "") intent.putExtra(
                                         "customerSSToken",
@@ -385,7 +385,6 @@ class VoltSDKContainer(
                 }
             }
         }
-        Log.e("TAG", "BVH entered VoltSDKContainer", )
     }
 
     var webView_url: String = "$url" +

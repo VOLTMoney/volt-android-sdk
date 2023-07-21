@@ -18,7 +18,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.webkit.*
-import android.webkit.WebView.WebViewTransport
+import android.webkit.WebView.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -28,6 +28,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.voltmoney.voltlib.R
+import com.voltmoney.voltsdk.models.SHOW_HEADER
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -88,6 +89,7 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var voltPlatformCode: String? = ""
     private var divId: String? = ""
     private var platformAuthToken: String? = ""
+    private var showHeader: String? = "Yes"
 
     init {
 
@@ -110,10 +112,16 @@ class VoltWebViewActivity : AppCompatActivity() {
             customerSSToken = intent.getStringExtra("customerSSToken")
             voltPlatformCode = intent.getStringExtra("voltPlatformCode")
             platformAuthToken = intent.getStringExtra("platformAuthToken")
+            showHeader = intent.getStringExtra("showHeader")
             webView.loadUrl(webUrl!!)
             toolbar.setBackgroundColor(Color.parseColor("#$primaryColor"))
             if (textColor!!.isNotEmpty()) {
                 toolbar.setTitleTextColor(Color.parseColor("#$textColor"))
+            }
+            if (showHeader == "No") {
+                toolbar.visibility = GONE
+            } else {
+                toolbar.visibility = VISIBLE
             }
             toolbar.setNavigationIcon(R.drawable.arrow_back)
             webUri = Uri.parse(webUrl)

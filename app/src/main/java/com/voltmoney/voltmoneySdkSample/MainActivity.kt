@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
     private var voltSDKContainer: VoltSDKContainer? = null
     private lateinit var requestQueue: RequestQueue
     var selectedEnvironment: ENVIRONMENT = ENVIRONMENT.STAGING
-    var showHeader: SHOW_HEADER = SHOW_HEADER.YES
+    var showHeader: String = "Yes"
 
 
     lateinit var binding: ActivityMainBinding
@@ -28,17 +28,31 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
         setContentView(binding.root)
         requestQueue = Volley.newRequestQueue(this)
 
-
         binding.stagingRB.setOnCheckedChangeListener { button, b ->
             if (binding.stagingRB.isChecked) {
                 selectedEnvironment = ENVIRONMENT.STAGING
                 binding.productionRB.isChecked = false
             }
         }
+
         binding.productionRB.setOnCheckedChangeListener { button, b ->
             if (binding.productionRB.isChecked) {
                 selectedEnvironment = ENVIRONMENT.PRODUCTION
                 binding.stagingRB.isChecked = false
+            }
+        }
+
+        binding.yesHeaderRB.setOnCheckedChangeListener { button, b ->
+            if (binding.yesHeaderRB.isChecked) {
+                showHeader = "Yes"
+                binding.noHeaderRB.isChecked = false
+            }
+        }
+
+        binding.noHeaderRB.setOnCheckedChangeListener { button, b ->
+            if (binding.noHeaderRB.isChecked) {
+                showHeader = "No"
+                binding.yesHeaderRB.isChecked = false
             }
         }
 
@@ -70,6 +84,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                             target,
                                             customerSSOToken,
                                             customerCode,
+                                            showHeader
                                         )
                                     }
                                 }
@@ -89,6 +104,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                                 target,
                                                 customerSSOToken,
                                                 customerCode,
+                                                showHeader
                                             )
                                         }
                                     }
@@ -113,6 +129,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                 target,
                                 customerSSOToken,
                                 customerCode,
+                                showHeader
                             )
 
                         } else {
