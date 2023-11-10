@@ -18,7 +18,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.webkit.*
-import android.webkit.WebView.WebViewTransport
+import android.webkit.WebView.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -28,10 +28,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.voltmoney.voltlib.R
+import com.voltmoney.voltsdk.models.SHOW_HEADER
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.log
 
 
 class VoltWebViewActivity : AppCompatActivity() {
@@ -39,28 +41,60 @@ class VoltWebViewActivity : AppCompatActivity() {
     private val REQUEST_CODE_FILE_CHOOSER = 1
     private val REQUEST_CODE_CAMERA = 2
     private var fileCallback: ValueCallback<Array<Uri>>? = null
-    private var capturePhotoPath:String?=null
-    private var webUrl:String?=null
-    private var webUri:Uri?=null
+    private var capturePhotoPath: String? = null
+    private var webUrl: String? = null
+    private var webUri: Uri? = null
     private val PERMISSIONS_CAMERA = arrayOf(Manifest.permission.CAMERA)
-    private val urlOpenInCustomTab = arrayOf("alpha-","bfin.in","docapp.bajajfinserv.in","bajajfinserv")
-    private val shouldNotReloadUrls = arrayOf("otp_verify","kyc_pan_verification","otp_auth_cas","mf_fetch_portfolio","pledge_confirmation","bank_account_verification","bank_select","bank_account_add","checking_limit","mf_pledge_portfolio")
-    private val shouldReloadUrls = arrayOf("mf_fetch_portfolio","mf_pledge_portfolio","kyc_stepper","bank_account_verification","modify_pledged_amount","portfolio","pledge_confirmation","update_phone_number","update_email_id","otp_auth_cas","pledge_verify")
-    private var reloadUrlBankAccount:Boolean = true
-    private var reloadUrlmfFetch:Boolean = true
-    private var reloadUrlmfPledge:Boolean = true
-    private var reloadUrlKycStepper:Boolean = true
-    private var reloadDashboard:Boolean = true
-    private var primaryColor:String? =null
+    private val urlOpenInCustomTab =
+        arrayOf("alpha-", "bfin.in", "docapp.bajajfinserv.in", "bajajfinserv")
+    private val shouldNotReloadUrls = arrayOf(
+        "otp_verify",
+        "kyc_pan_verification",
+        "otp_auth_cas",
+        "mf_fetch_portfolio",
+        "pledge_confirmation",
+        "bank_account_verification",
+        "bank_select",
+        "bank_account_add",
+        "checking_limit",
+        "mf_pledge_portfolio"
+    )
+    private val shouldReloadUrls = arrayOf(
+        "mf_fetch_portfolio",
+        "mf_pledge_portfolio",
+        "kyc_stepper",
+        "bank_account_verification",
+        "modify_pledged_amount",
+        "portfolio",
+        "pledge_confirmation",
+        "update_phone_number",
+        "update_email_id",
+        "otp_auth_cas",
+        "pledge_verify"
+    )
+    private var reloadUrlBankAccount: Boolean = true
+    private var reloadUrlmfFetch: Boolean = true
+    private var reloadUrlmfPledge: Boolean = true
+    private var reloadUrlKycStepper: Boolean = true
+    private var reloadDashboard: Boolean = true
+    private var primaryColor: String? = null
     private var countWebViewLoad = 0
     private var webViewReloadCount = 0
-    private lateinit var toolbar:Toolbar
-    private var textColor:String? = ""
+    private lateinit var toolbar: Toolbar
+    private var textColor: String? = ""
     private var mWebviewPop: WebView? = null
     private var builder: AlertDialog? = null
+    private var target: String? = ""
+    private var customerSSToken: String? = ""
+    private var voltPlatformCode: String? = ""
+    private var divId: String? = ""
+    private var platformAuthToken: String? = ""
+    private var showHeader: String? = "Yes"
+
     init {
 
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_volt_main)
@@ -70,37 +104,69 @@ class VoltWebViewActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         webView = findViewById(R.id.web_view)
-        if (intent.getStringExtra("webViewUrl")!=null){
+        if (intent.getStringExtra("webViewUrl") != null) {
             webUrl = intent.getStringExtra("webViewUrl")!!
             primaryColor = intent.getStringExtra("primaryColor")
-            textColor= intent.getStringExtra("textColor")
+            textColor = intent.getStringExtra("textColor")
+            target = intent.getStringExtra("target")
+            customerSSToken = intent.getStringExtra("customerSSToken")
+            voltPlatformCode = intent.getStringExtra("voltPlatformCode")
+            platformAuthToken = intent.getStringExtra("platformAuthToken")
+            showHeader = intent.getStringExtra("showHeader")
             webView.loadUrl(webUrl!!)
-        }else{
-            webUrl = "https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL"
+            toolbar.setBackgroundColor(Color.parseColor("#$primaryColor"))
+            if (textColor!!.isNotEmpty()) {
+                toolbar.setTitleTextColor(Color.parseColor("#$textColor"))
+            }
+            if (showHeader == "No") {
+                toolbar.visibility = GONE
+            } else {
+                toolbar.visibility = VISIBLE
+            }
+            toolbar.setNavigationIcon(R.drawable.arrow_back)
+            webUri = Uri.parse(webUrl)
+            webView.settings.apply {
+                javaScriptEnabled = true
+                cacheMode = WebSettings.LOAD_DEFAULT
+                //  javaScriptEnabled = true
+                loadWithOverviewMode = true
+                allowFileAccess = true
+                domStorageEnabled = true
+                setSupportMultipleWindows(true)
+                useWideViewPort = true
+                allowContentAccess = true
+                // mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            }
+            webView.webViewClient = VoltWebViewClient()
+            webView.webChromeClient = VoltWebChromeClient()
+        } else {
+            Log.d("TAG", "onCreate of SDK 2")
+            webUrl =
+                "https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL"
             webView.loadUrl(webUrl!!)
+            toolbar.setBackgroundColor(Color.parseColor("#$primaryColor"))
+            if (!textColor!!.isEmpty()) {
+                toolbar.setTitleTextColor(Color.parseColor("#$textColor"))
+            }
+            toolbar.setNavigationIcon(R.drawable.arrow_back)
+            webUri = Uri.parse(webUrl)
+            webView.settings.apply {
+                javaScriptEnabled = true
+                cacheMode = WebSettings.LOAD_DEFAULT
+                //  javaScriptEnabled = true
+                loadWithOverviewMode = true
+                allowFileAccess = true
+                domStorageEnabled = true
+                setSupportMultipleWindows(true)
+                useWideViewPort = true
+                allowContentAccess = true
+                // mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            }
+            webView.webViewClient = VoltWebViewClient()
+            webView.webChromeClient = VoltWebChromeClient()
         }
-        toolbar.setBackgroundColor(Color.parseColor("#$primaryColor"))
-        if(!textColor!!.isEmpty()) {
-            toolbar.setTitleTextColor(Color.parseColor("#$textColor"))
-        }
-        toolbar.setNavigationIcon(R.drawable.arrow_back)
-        webUri = Uri.parse(webUrl)
-        webView.settings.apply {
-            javaScriptEnabled = true
-            cacheMode = WebSettings.LOAD_DEFAULT
-          //  javaScriptEnabled = true
-            loadWithOverviewMode = true
-            allowFileAccess = true
-            domStorageEnabled = true
- setSupportMultipleWindows(true)
-            useWideViewPort = true
-            allowContentAccess=true
-           // mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-        }
-        webView.webViewClient = VoltWebViewClient()
-        webView.webChromeClient = VoltWebChromeClient()
-
     }
+
     private class UriWebViewClient : WebViewClient() {
         /*
         @Override
@@ -185,12 +251,17 @@ class VoltWebViewActivity : AppCompatActivity() {
             // }
 
             // set the WebView as the AlertDialog.Builder’s view
-            builder = AlertDialog.Builder(this@VoltWebViewActivity, android.R.style.Theme_Light_NoTitleBar_Fullscreen)
+            builder = AlertDialog.Builder(
+                this@VoltWebViewActivity,
+                android.R.style.Theme_Light_NoTitleBar_Fullscreen
+            )
                 .create()
             builder?.setTitle("")
-            builder!!.setButton(AlertDialog.BUTTON_NEGATIVE,"Close", {
+            builder!!.setButton(AlertDialog.BUTTON_NEGATIVE, "Close", {
                 //do your own idea.
-                    dialog, which -> mWebviewPop!!.destroy() })
+                    dialog, which ->
+                mWebviewPop!!.destroy()
+            })
             builder?.setView(mWebviewPop)
 
 
@@ -238,8 +309,16 @@ class VoltWebViewActivity : AppCompatActivity() {
             builder.setItems(items) { _, item ->
                 when (item) {
                     0 -> {
-                        if (ContextCompat.checkSelfPermission(this@VoltWebViewActivity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(this@VoltWebViewActivity, arrayOf(Manifest.permission.CAMERA), REQUEST_CODE_CAMERA)
+                        if (ContextCompat.checkSelfPermission(
+                                this@VoltWebViewActivity,
+                                Manifest.permission.CAMERA
+                            ) != PackageManager.PERMISSION_GRANTED
+                        ) {
+                            ActivityCompat.requestPermissions(
+                                this@VoltWebViewActivity,
+                                arrayOf(Manifest.permission.CAMERA),
+                                REQUEST_CODE_CAMERA
+                            )
                         } else {
                             openCamera()
                         }
@@ -248,9 +327,9 @@ class VoltWebViewActivity : AppCompatActivity() {
                         val intent = Intent(Intent.ACTION_GET_CONTENT)
                         intent.addCategory(Intent.CATEGORY_OPENABLE)
                         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                        val mimetype = arrayOf("application/pdf","image/*")
+                        val mimetype = arrayOf("application/pdf", "image/*")
                         intent.type = "*/*"
-                        intent.putExtra(Intent.EXTRA_MIME_TYPES,mimetype)
+                        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetype)
                         startActivityForResult(intent, REQUEST_CODE_FILE_CHOOSER)
                     }
                 }
@@ -263,6 +342,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             dialog.show()
             return true
         }
+
         override fun onProgressChanged(view: WebView?, newProgress: Int) {
             super.onProgressChanged(view, newProgress)
         }
@@ -328,52 +408,51 @@ class VoltWebViewActivity : AppCompatActivity() {
         override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
             super.doUpdateVisitedHistory(view, url, isReload)
             Log.d("VoltWebViewCount: ", countWebViewLoad.toString())
-            if(countWebViewLoad>15) {
+            Log.d("TAG", "onCreate of SDK doUpdateVisitedHistory entry")
+            if (countWebViewLoad > 15) {
                 //view?.removeAllViews()
-              /*  webUrl?.let { view!!.loadUrl(it) }
-                Log.d("VoltWebViewReloadCount: ", (webViewReloadCount++).toString())
-                Log.d("UrlWherePageReloaded", url.toString())*/
+                /*  webUrl?.let { view!!.loadUrl(it) }
+                  Log.d("VoltWebViewReloadCount: ", (webViewReloadCount++).toString())
+                  Log.d("UrlWherePageReloaded", url.toString())*/
                 countWebViewLoad = 0
-                reloadUrlBankAccount= true
+                reloadUrlBankAccount = true
                 reloadUrlmfFetch = true
-                reloadUrlmfPledge= true
+                reloadUrlmfPledge = true
                 reloadUrlKycStepper = true
                 reloadDashboard = true
             }
-             if(url!!.contains("mf_fetch_portfolio") && reloadUrlmfFetch){
-                 reloadUrlmfFetch = false
-                 webUrl?.let { view!!.loadUrl(it) }
-                 countWebViewLoad = 0
-                }
-             if (url!!.contains("mf_pledge_portfolio") && reloadUrlmfPledge){
-                 reloadUrlmfPledge = false
-                 webUrl?.let { view!!.loadUrl(it) }
-                 countWebViewLoad = 0
-                }
-             if (url!!.contains("kyc_stepper") && reloadUrlKycStepper)
-                {
-                    reloadUrlKycStepper = false
+            if (url!!.contains("mf_fetch_portfolio") && reloadUrlmfFetch) {
+                reloadUrlmfFetch = false
+                webUrl?.let { view!!.loadUrl(it) }
+                countWebViewLoad = 0
+            }
+            if (url!!.contains("mf_pledge_portfolio") && reloadUrlmfPledge) {
+                reloadUrlmfPledge = false
+                webUrl?.let { view!!.loadUrl(it) }
+                countWebViewLoad = 0
+            }
+            if (url!!.contains("kyc_stepper") && reloadUrlKycStepper) {
+                reloadUrlKycStepper = false
                 // webUrl+="/pledge_confirmation"
-                 webUrl?.let { view!!.loadUrl(it) }
-                   // https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL&user=8939254696/pledge_confirmation
-                 countWebViewLoad = 0
-                }
-            if (url!!.contains("bank_account_verification") && reloadUrlBankAccount)
-            {
+                webUrl?.let { view!!.loadUrl(it) }
+                // https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL&user=8939254696/pledge_confirmation
+                countWebViewLoad = 0
+            }
+            if (url!!.contains("bank_account_verification") && reloadUrlBankAccount) {
                 reloadUrlBankAccount = false
                 // webUrl+="/pledge_confirmation"
                 webUrl?.let { view!!.loadUrl(it) }
                 // https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL&user=8939254696/pledge_confirmation
                 countWebViewLoad = 0
             }
-            if(url!!.contains("dashboard") && reloadDashboard){
+            if (url!!.contains("dashboard") && reloadDashboard) {
                 reloadDashboard = false
                 // webUrl+="/pledge_confirmation"
                 webUrl?.let { view!!.loadUrl(it) }
                 // https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL&user=8939254696/pledge_confirmation
                 countWebViewLoad = 0
             }
-                countWebViewLoad++
+            countWebViewLoad++
         }
 
         override fun onReceivedSslError(
@@ -398,9 +477,9 @@ class VoltWebViewActivity : AppCompatActivity() {
         }
 
         override fun shouldOverrideKeyEvent(view: WebView?, event: KeyEvent?): Boolean {
-            if (fileCallback!=null){
+            if (fileCallback != null) {
                 fileCallback!!.onReceiveValue(null)
-                fileCallback=null
+                fileCallback = null
             }
             return super.shouldOverrideKeyEvent(view, event)
         }
@@ -441,15 +520,14 @@ class VoltWebViewActivity : AppCompatActivity() {
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
             if (url.contains(webUri!!.host!!)) {
                 return true
-            }
-            else if (checkURLMatchesFromListArray(url,urlOpenInCustomTab)) {
+            } else if (checkURLMatchesFromListArray(url, urlOpenInCustomTab)) {
 
                 val customIntent = CustomTabsIntent.Builder()
                 customIntent.setUrlBarHidingEnabled(true)
                 customIntent.setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
-               if(primaryColor?.length==6) {
-                   customIntent.setToolbarColor(Color.parseColor("#$primaryColor"))
-               }
+                if (primaryColor?.length == 6) {
+                    customIntent.setToolbarColor(Color.parseColor("#$primaryColor"))
+                }
                 customIntent.setStartAnimations(
                     this@VoltWebViewActivity,
                     android.R.anim.slide_in_left,
@@ -470,14 +548,15 @@ class VoltWebViewActivity : AppCompatActivity() {
             return true
         }
 
-        private fun checkURLMatchesFromListArray(url: String,list:Array<String>): Boolean {
+        private fun checkURLMatchesFromListArray(url: String, list: Array<String>): Boolean {
             list.forEach {
-                 if(url.contains(it)){
-                     return true
-                 }
+                if (url.contains(it)) {
+                    return true
+                }
             }
             return false
         }
+
         override fun shouldOverrideUrlLoading(
             view: WebView?,
             request: WebResourceRequest?
@@ -512,7 +591,7 @@ class VoltWebViewActivity : AppCompatActivity() {
                 this.fileCallback?.onReceiveValue(arrayOf(Uri.parse(capturePhotoPath)))
                 this.fileCallback = null
             }
-        }else{
+        } else {
             fileCallback?.onReceiveValue(null)
             Toast.makeText(this, "Photo not uploaded", Toast.LENGTH_SHORT).show()
         }
@@ -530,7 +609,14 @@ class VoltWebViewActivity : AppCompatActivity() {
             }
             if (photoFile != null) {
                 capturePhotoPath = "file:" + photoFile.absolutePath
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".fileprovider", photoFile))
+                intent.putExtra(
+                    MediaStore.EXTRA_OUTPUT,
+                    FileProvider.getUriForFile(
+                        this,
+                        this.getApplicationContext().getPackageName() + ".fileprovider",
+                        photoFile
+                    )
+                )
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 startActivityForResult(intent, REQUEST_CODE_CAMERA)
             }
@@ -565,6 +651,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             activity.startActivity(Intent(Intent.ACTION_VIEW, uri))
         }
     }
+
     private fun verifyCameraPermissions(activity: Activity) {
         val cameraPermission =
             ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
@@ -577,6 +664,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             )
         }
     }
+
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
