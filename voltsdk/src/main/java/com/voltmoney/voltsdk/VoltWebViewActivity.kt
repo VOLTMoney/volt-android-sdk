@@ -116,6 +116,10 @@ class VoltWebViewActivity : AppCompatActivity() {
             platformAuthToken = intent.getStringExtra("platformAuthToken")
             showHeader = intent.getStringExtra("showHeader")
             webView.loadUrl(webUrl!!)
+            toolbar.setBackgroundColor(Color.parseColor("#$primaryColor"))
+            if (textColor!!.isNotEmpty()) {
+                toolbar.setTitleTextColor(Color.parseColor("#$textColor"))
+            }
             if (showHeader == "No") {
                 toolbar.visibility = GONE
             } else {
@@ -230,7 +234,6 @@ class VoltWebViewActivity : AppCompatActivity() {
 
         override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
             Log.d("WebView SGAR", consoleMessage!!.message());
-
             return true
         }
 
