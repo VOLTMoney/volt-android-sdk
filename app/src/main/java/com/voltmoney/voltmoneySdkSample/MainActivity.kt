@@ -17,7 +17,7 @@ import com.voltmoney.voltsdk.models.SHOW_HEADER
 class MainActivity : AppCompatActivity(), VoltAPIResponse {
     private var voltSDKContainer: VoltSDKContainer? = null
     private lateinit var requestQueue: RequestQueue
-    var selectedEnvironment: ENVIRONMENT = ENVIRONMENT.STAGING
+    var selectedEnvironment: String = "staging"
     var showHeader: String = "Yes"
 
 
@@ -30,14 +30,14 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
 
         binding.stagingRB.setOnCheckedChangeListener { button, b ->
             if (binding.stagingRB.isChecked) {
-                selectedEnvironment = ENVIRONMENT.STAGING
+                selectedEnvironment = "staging"
                 binding.productionRB.isChecked = false
             }
         }
 
         binding.productionRB.setOnCheckedChangeListener { button, b ->
             if (binding.productionRB.isChecked) {
-                selectedEnvironment = ENVIRONMENT.PRODUCTION
+                selectedEnvironment = "production"
                 binding.stagingRB.isChecked = false
             }
         }
