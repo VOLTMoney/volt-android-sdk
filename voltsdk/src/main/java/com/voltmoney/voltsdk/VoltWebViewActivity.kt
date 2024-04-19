@@ -12,6 +12,7 @@ import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.os.Message
 import android.provider.MediaStore
 import android.util.Log
@@ -20,6 +21,7 @@ import android.view.WindowManager
 import android.webkit.*
 import android.webkit.WebView.*
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -46,7 +48,7 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var webUri: Uri? = null
     private val PERMISSIONS_CAMERA = arrayOf(Manifest.permission.CAMERA)
     private val urlOpenInCustomTab =
-        arrayOf("alpha-", "bfin.in", "docapp.bajajfinserv.in", "bajajfinserv")
+        arrayOf("alpha-", "bfin.in", "docapp.bajajfinserv.in", "bajajfinserv", "enach", "tatacapital")
     private val shouldNotReloadUrls = arrayOf(
         "otp_verify",
         "kyc_pan_verification",
@@ -124,19 +126,30 @@ class VoltWebViewActivity : AppCompatActivity() {
                 toolbar.visibility = VISIBLE
             }
             toolbar.setNavigationIcon(R.drawable.arrow_back)
+            CookieManager.getInstance().setAcceptCookie(true);
+
+            if (Build.VERSION.SDK_INT >= 21) {
+                CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+            } else {
+                CookieManager.getInstance().setAcceptCookie(true);
+            }
             webUri = Uri.parse(webUrl)
+            Log.d("URL GOT IN WEBVIEW", webUrl.toString())
             webView.settings.apply {
+                defaultTextEncodingName = "utf-8"
                 javaScriptEnabled = true
-                cacheMode = WebSettings.LOAD_DEFAULT
-                //  javaScriptEnabled = true
                 loadWithOverviewMode = true
                 allowFileAccess = true
                 domStorageEnabled = true
                 setSupportMultipleWindows(true)
-                useWideViewPort = true
                 allowContentAccess = true
+                javaScriptCanOpenWindowsAutomatically
+                useWideViewPort = true
+                mediaPlaybackRequiresUserGesture= false
+                loadsImagesAutomatically = true
                 // mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             }
+
             webView.webViewClient = VoltWebViewClient()
             webView.webChromeClient = VoltWebChromeClient()
         } else {
@@ -144,10 +157,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             webUrl =
                 "https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL"
             webView.loadUrl(webUrl!!)
-            toolbar.setBackgroundColor(Color.parseColor("#$primaryColor"))
-            if (!textColor!!.isEmpty()) {
-                toolbar.setTitleTextColor(Color.parseColor("#$textColor"))
-            }
+
             toolbar.setNavigationIcon(R.drawable.arrow_back)
             webUri = Uri.parse(webUrl)
             webView.settings.apply {
@@ -166,6 +176,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             webView.webChromeClient = VoltWebChromeClient()
         }
     }
+
 
     private class UriWebViewClient : WebViewClient() {
         /*
@@ -209,6 +220,22 @@ class VoltWebViewActivity : AppCompatActivity() {
 
     inner class VoltWebChromeClient : WebChromeClient() {
 
+        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+        override fun onPermissionRequest(request: PermissionRequest?) {
+            Log.d("HERE IN THE REQUEST", request.toString())
+            this@VoltWebViewActivity.runOnUiThread { request!!.grant(request.resources) }
+
+        }
+
+        override fun onPermissionRequestCanceled(request: PermissionRequest?) {
+
+            super.onPermissionRequestCanceled(request)
+        }
+
+        override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
+            Log.d("WebView SGAR", consoleMessage!!.message());
+            return true
+        }
 
         override fun onCreateWindow(
             view: WebView?,
@@ -284,6 +311,23 @@ class VoltWebViewActivity : AppCompatActivity() {
         }
 
         override fun onCloseWindow(window: WebView?) {
+            Log.d("CLOSE CALLED", "CLOSE CALLED")
+            try {
+                try {
+                    val myIntent = Intent(this@VoltWebViewActivity, VoltWebViewActivity::class.java)
+                    myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    this@VoltWebViewActivity.startActivity(myIntent)
+
+                    Log.d("CLOSE CALL RECEIVED", "CLOSE CALL RECEIVED" + mWebviewPop)
+                } catch (e: Exception) {
+                    // TODO: Write an exception handler to notify user
+                }
+
+            } catch (e: Exception) {
+                Log.e("ERROR RECEIVED", e.toString())
+                // TODO: Write an exception handler to notify user
+            }
             try {
                 mWebviewPop!!.destroy()
             } catch (e: Exception) {
@@ -360,6 +404,8 @@ class VoltWebViewActivity : AppCompatActivity() {
         override fun shouldInterceptRequest(view: WebView?, url: String?): WebResourceResponse? {
             return super.shouldInterceptRequest(view, url)
         }
+
+
 
         override fun shouldInterceptRequest(
             view: WebView?,
@@ -518,27 +564,20 @@ class VoltWebViewActivity : AppCompatActivity() {
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+            Log.d("RECHED HERE", url)
+            Log.d("RECHED HERE AS WELL", checkURLMatchesFromListArray(url, urlOpenInCustomTab).toString())
+
             if (url.contains(webUri!!.host!!)) {
+                view.loadUrl(url)
                 return true
             } else if (checkURLMatchesFromListArray(url, urlOpenInCustomTab)) {
+                Log.d("REACHED THERE IN THE", "")
+               var  customTabsIntent = CustomTabsIntent.Builder().setInitialActivityHeightPx(400,
+                    CustomTabsIntent.ACTIVITY_HEIGHT_FIXED
+                )
+                customTabsIntent!!.setToolbarColor(ContextCompat.getColor(this@VoltWebViewActivity, androidx.appcompat.R.color.material_blue_grey_800));
+                openCustomTab(this@VoltWebViewActivity, customTabsIntent!!.build(), Uri.parse(url));
 
-                val customIntent = CustomTabsIntent.Builder()
-                customIntent.setUrlBarHidingEnabled(true)
-                customIntent.setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
-                if (primaryColor?.length == 6) {
-                    customIntent.setToolbarColor(Color.parseColor("#$primaryColor"))
-                }
-                customIntent.setStartAnimations(
-                    this@VoltWebViewActivity,
-                    android.R.anim.slide_in_left,
-                    android.R.anim.slide_out_right
-                )
-                customIntent.setExitAnimations(
-                    this@VoltWebViewActivity,
-                    android.R.anim.slide_out_right,
-                    android.R.anim.slide_in_left
-                )
-                openCustomTab(this@VoltWebViewActivity, customIntent.build(), Uri.parse(url));
             }
             // open camera/document picker
             else {
@@ -569,6 +608,8 @@ class VoltWebViewActivity : AppCompatActivity() {
         }
 
         override fun onPageFinished(view: WebView?, url: String?) {
+            CookieSyncManager.getInstance().sync();
+
             super.onPageFinished(view, url)
         }
 
@@ -636,6 +677,7 @@ class VoltWebViewActivity : AppCompatActivity() {
         val packageName = "com.android.chrome"
         if (packageName != null) {
 
+
             // we are checking if the package name is not null
             // if package name is not null then we are calling
             // that custom chrome tab with intent by passing its
@@ -648,9 +690,10 @@ class VoltWebViewActivity : AppCompatActivity() {
         } else {
             // if the custom tabs fails to load then we are simply
             // redirecting our user to users device default browser.
-            activity.startActivity(Intent(Intent.ACTION_VIEW, uri))
+            activity.startActivityForResult(Intent(Intent.ACTION_VIEW, uri), 1)
         }
     }
+
 
     private fun verifyCameraPermissions(activity: Activity) {
         val cameraPermission =

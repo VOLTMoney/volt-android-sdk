@@ -13,7 +13,6 @@ android {
         targetSdk 32
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -49,7 +48,7 @@ dependencies {
 
 
     //when using jitpack
-    //implementation 'com.github.VOLTMoney:volt-android-sdk:1.0.4'
+   // implementation 'com.github.VOLTMoney:volt-android-sdk:2.0.0'
 
     //When using module
     implementation project(':voltsdk')

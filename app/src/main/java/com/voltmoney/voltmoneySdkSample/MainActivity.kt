@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                             .show()
                     } else {
                         if (customerSSOToken == null) {
+
                             binding.etPlatform.text.toString().let { iter ->
                                 {
                                     if (iter.length > 2) {
@@ -89,6 +90,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                     }
                                 }
                             }
+
                         } else {
                             if (customerCode !== null) {
                                 binding.etPlatform.text.toString().let { iter ->

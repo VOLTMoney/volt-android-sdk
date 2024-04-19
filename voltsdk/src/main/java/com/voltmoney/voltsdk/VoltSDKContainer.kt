@@ -30,7 +30,7 @@ class VoltSDKContainer(
     private var showHeader: String?,
     ) {
     var url =
-        if (environment == ENVIRONMENT.STAGING) "https://app.staging.voltmoney.in/?partnerplatform" else "https://app.voltmoney.in/?partnerplatform"
+        if (environment == ENVIRONMENT.STAGING)  "https://app.staging.voltmoney.in/?partnerplatform" else "https://app.voltmoney.in/?partnerplatform"
 
     init {
         if (platformAuthToken?.trim() == null || platformAuthToken?.trim() == "") {
@@ -118,8 +118,7 @@ class VoltSDKContainer(
                                     @Throws(AuthFailureError::class)
                                     override fun getHeaders(): MutableMap<String, String> {
                                         val headers = HashMap<String, String>()
-                                        headers["X-AppPlatform"] = "VOLT_API_UAT"
-                                        headers["requestReferenceId"] = "5eufmnf6phj"
+                                        headers["X-AppPlatform"] = "${partner_platform}"
                                         headers["Content-Type"] = "application/json"
                                         headers["Authorization"] =
                                             "Bearer ${platformAuthToken}"
@@ -236,7 +235,7 @@ class VoltSDKContainer(
                                         @Throws(AuthFailureError::class)
                                         override fun getHeaders(): MutableMap<String, String> {
                                             val headers = HashMap<String, String>()
-                                            headers["X-AppPlatform"] = "VOLT_API_UAT"
+                                            headers["X-AppPlatform"] = "${partner_platform}"
                                             headers["requestReferenceId"] = "5eufmnf6phj"
                                             headers["Content-Type"] = "application/json"
                                             headers["Authorization"] =
@@ -391,9 +390,9 @@ class VoltSDKContainer(
             "&platform=$partner_platform" +
             "&primaryColor=$primary_color" +
             "&target=${target?.trim()}" +
+            "&isFromNativeSdk=${true}" +
             "&ssoToken=$customerSSToken" +
             "&voltPlatformCode=$partner_platform"
-
 
     fun logoutSDK() {
         WebStorage.getInstance().deleteAllData()
