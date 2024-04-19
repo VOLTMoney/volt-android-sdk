@@ -16,12 +16,12 @@ import com.voltmoney.voltsdk.models.*
 import org.json.JSONObject
 import com.android.volley.Response as VResponse
 
-
+public var STAGING = "staging"
 class VoltSDKContainer(
     private val context: Context,
     private val partner_platform: String,
     private var platformAuthToken: String?,
-    private var environment: ENVIRONMENT,
+    private var environment: String?,
     private val primary_color: String?,
     private var headingTextColor: String = "",
     private var target: String?,
@@ -30,7 +30,7 @@ class VoltSDKContainer(
     private var showHeader: String?,
     ) {
     var url =
-        if (environment == ENVIRONMENT.STAGING)  "https://app.staging.voltmoney.in/?partnerplatform" else "https://app.voltmoney.in/?partnerplatform"
+        if (environment == STAGING)  "https://app.staging.voltmoney.in/?partnerplatform" else "https://app.voltmoney.in/?partnerplatform"
 
     init {
         if (platformAuthToken?.trim() == null || platformAuthToken?.trim() == "") {
@@ -41,7 +41,7 @@ class VoltSDKContainer(
             } else {
                 if (target?.trim() == "") {
                     var getDetailsURL =
-                        if (environment === ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
+                        if (environment == STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
                     val requestQueue: RequestQueue =
                         Volley.newRequestQueue(context)
                     val stringRequest = object : StringRequest(
@@ -53,7 +53,7 @@ class VoltSDKContainer(
                             val responseData = gson.fromJson(response, ResponseData::class.java)
                             val platformSDKConfig = responseData.platformSDKConfig
                             var validateSSOTokenURL =
-                                if (environment === ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
+                                if (environment == STAGING) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
                             val requestQueue: RequestQueue =
                                 Volley.newRequestQueue(context)
 
@@ -146,7 +146,7 @@ class VoltSDKContainer(
                         Log.e("TAG", "The target page does not exist")
                     } else {
                         var getDetailsURL =
-                            if (environment === ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
+                            if (environment == STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
                         val requestQueue: RequestQueue =
                             Volley.newRequestQueue(context)
                         val stringRequest = object : StringRequest(
@@ -158,7 +158,7 @@ class VoltSDKContainer(
                                 val responseData = gson.fromJson(response, ResponseData::class.java)
                                 val platformSDKConfig = responseData.platformSDKConfig
                                 var validateSSOTokenURL =
-                                    if (environment == ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
+                                    if (environment == STAGING) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
                                 val requestQueue: RequestQueue =
                                     Volley.newRequestQueue(context)
 
@@ -265,7 +265,7 @@ class VoltSDKContainer(
         } else {
             if (target == "") {
                 var getDetailsURL =
-                    if (environment == ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
+                    if (environment == STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
                 val requestQueue: RequestQueue =
                     Volley.newRequestQueue(context)
                 val stringRequest = object : StringRequest(Request.Method.GET,
@@ -326,7 +326,7 @@ class VoltSDKContainer(
                     Log.e("TAG", "The target page does not exist")
                 } else {
                     var getDetailsURL =
-                        if (environment == ENVIRONMENT.STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
+                        if (environment == STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
                     val requestQueue: RequestQueue =
                         Volley.newRequestQueue(context)
                     val stringRequest = object : StringRequest(Request.Method.GET,
