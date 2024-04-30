@@ -251,10 +251,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             mWebviewPop?.getSettings()?.setJavaScriptEnabled(true)
             mWebviewPop?.getSettings()?.setSavePassword(true)
             mWebviewPop?.getSettings()?.setSaveFormData(true)
-            // mWebviewPop.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-            // create an AlertDialog.Builder
-            // the below did not give me .dismiss() method . See : https://stackoverflow.com/questions/14853325/how-to-dismiss-alertdialog-in-android
+            mWebviewPop?.settings?.domStorageEnabled = true
 
             // AlertDialog.Builder builder;
             // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

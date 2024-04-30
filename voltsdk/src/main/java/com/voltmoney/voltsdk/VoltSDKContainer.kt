@@ -68,7 +68,7 @@ class VoltSDKContainer(
                                     jsonBody,
                                     VResponse.Listener { response ->
                                         if (platformSDKConfig != null) {
-                                                    webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
+                                                    webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}&isFromNativeSDK=true"
                                                 val intent =
                                                     Intent(context, VoltWebViewActivity::class.java)
                                                 intent.putExtra("webViewUrl", webView_url)
