@@ -17,6 +17,7 @@ import android.os.Message
 import android.provider.MediaStore
 import android.util.Log
 import android.view.KeyEvent
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.*
 import android.webkit.WebView.*
@@ -25,6 +26,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.browser.customtabs.CustomTabsCallback
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -152,6 +154,8 @@ class VoltWebViewActivity : AppCompatActivity() {
 
             webView.webViewClient = VoltWebViewClient()
             webView.webChromeClient = VoltWebChromeClient()
+
+
         } else {
             Log.d("TAG", "onCreate of SDK 2")
             webUrl =
@@ -176,6 +180,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             webView.webChromeClient = VoltWebChromeClient()
         }
     }
+
 
 
     private class UriWebViewClient : WebViewClient() {
@@ -252,6 +257,12 @@ class VoltWebViewActivity : AppCompatActivity() {
             mWebviewPop?.getSettings()?.setSavePassword(true)
             mWebviewPop?.getSettings()?.setSaveFormData(true)
             mWebviewPop?.settings?.domStorageEnabled = true
+
+            mWebviewPop?.layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+
 
             // AlertDialog.Builder builder;
             // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -564,6 +575,14 @@ class VoltWebViewActivity : AppCompatActivity() {
             Log.d("RECHED HERE", url)
             Log.d("RECHED HERE AS WELL", checkURLMatchesFromListArray(url, urlOpenInCustomTab).toString())
 
+
+             if(url.contains(("closePop"))){
+                 val myIntent = Intent(this@VoltWebViewActivity, VoltWebViewActivity::class.java)
+                 myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                 myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                 this@VoltWebViewActivity.startActivity(myIntent)
+                 return  true
+             }
             if (url.contains(webUri!!.host!!)) {
                 view.loadUrl(url)
                 return true
@@ -675,11 +694,26 @@ class VoltWebViewActivity : AppCompatActivity() {
         if (packageName != null) {
 
 
+            // Create a CustomTabsCallback
+            val customTabsCallback = object : CustomTabsCallback() {
+                override fun onNavigationEvent(navigationEvent: Int, extras: Bundle?) {
+                    super.onNavigationEvent(navigationEvent, extras)
+                    // Check if the tab has been closed
+                    if (navigationEvent == TAB_HIDDEN) {
+                        // Handle the tab being closed
+                        // For example, notify the user, or perform any necessary actions
+                        // Here you can put your callback code
+                        // For simplicity, I'm just logging
+                        Log.d("CustomTab", "Custom tab closed")
+                    }
+                }
+            }
             // we are checking if the package name is not null
             // if package name is not null then we are calling
             // that custom chrome tab with intent by passing its
             // package name.
             customTabsIntent.intent.setPackage(packageName)
+
 
             // in that custom tab intent we are passing
             // our url which we have to browse.
