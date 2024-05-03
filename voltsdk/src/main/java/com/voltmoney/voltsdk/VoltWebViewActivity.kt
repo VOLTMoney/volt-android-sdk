@@ -258,10 +258,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             mWebviewPop?.getSettings()?.setSaveFormData(true)
             mWebviewPop?.settings?.domStorageEnabled = true
 
-            mWebviewPop?.layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
+
 
 
             // AlertDialog.Builder builder;
