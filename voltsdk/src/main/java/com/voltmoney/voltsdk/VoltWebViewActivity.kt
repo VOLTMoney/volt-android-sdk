@@ -2,7 +2,6 @@ package com.voltmoney.voltsdk
 
 import android.Manifest
 import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -12,15 +11,31 @@ import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
 import android.os.Message
 import android.provider.MediaStore
 import android.util.Log
 import android.view.KeyEvent
-import android.view.ViewGroup
 import android.view.WindowManager
-import android.webkit.*
-import android.webkit.WebView.*
+import android.webkit.ClientCertRequest
+import android.webkit.ConsoleMessage
+import android.webkit.CookieManager
+import android.webkit.CookieSyncManager
+import android.webkit.HttpAuthHandler
+import android.webkit.PermissionRequest
+import android.webkit.RenderProcessGoneDetail
+import android.webkit.SafeBrowsingResponse
+import android.webkit.SslErrorHandler
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebView.GONE
+import android.webkit.WebView.VISIBLE
+import android.webkit.WebView.WebViewTransport
+import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -32,12 +47,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.voltmoney.voltlib.R
-import com.voltmoney.voltsdk.models.SHOW_HEADER
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.math.log
+import java.util.Date
+import java.util.Locale
 
 
 class VoltWebViewActivity : AppCompatActivity() {
@@ -94,11 +108,14 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var divId: String? = ""
     private var platformAuthToken: String? = ""
     private var showHeader: String? = "Yes"
-
-    init {
-
+    private var onExitCallback: MyCallback? = null
+    companion object {
+        lateinit var onExitVolt: () -> Unit
     }
 
+
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_volt_main)
@@ -108,6 +125,9 @@ class VoltWebViewActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         webView = findViewById(R.id.web_view)
+
+        onExitCallback = intent.getSerializableExtra("onExitCallback", MyCallback::class.java)
+
         if (intent.getStringExtra("webViewUrl") != null) {
             webUrl = intent.getStringExtra("webViewUrl")!!
             primaryColor = intent.getStringExtra("primaryColor")
@@ -129,6 +149,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             }
             toolbar.setNavigationIcon(R.drawable.arrow_back)
             CookieManager.getInstance().setAcceptCookie(true);
+
 
             if (Build.VERSION.SDK_INT >= 21) {
                 CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
@@ -179,6 +200,11 @@ class VoltWebViewActivity : AppCompatActivity() {
             webView.webViewClient = VoltWebViewClient()
             webView.webChromeClient = VoltWebChromeClient()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+       onExitVolt()
     }
 
 
