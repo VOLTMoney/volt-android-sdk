@@ -68,7 +68,7 @@ class VoltSDKContainer(
                                     jsonBody,
                                     VResponse.Listener { response ->
                                         if (platformSDKConfig != null) {
-                                                    webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}&isFromNativeSDK=true"
+                                                    webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}&isFromNativeSDK=true&showHome=${platformSDKConfig.showHome}"
                                                 val intent =
                                                     Intent(context, VoltWebViewActivity::class.java)
                                                 intent.putExtra("webViewUrl", webView_url)
@@ -173,7 +173,7 @@ class VoltSDKContainer(
                                         jsonBody,
                                         VResponse.Listener { response ->
                                             if (platformSDKConfig != null) {
-                                                        webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
+                                                        webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}&showHome=${platformSDKConfig.showHome}"
                                                     val intent =
                                                         Intent(
                                                             context,
@@ -276,7 +276,7 @@ class VoltSDKContainer(
                         val responseData = gson.fromJson(response, ResponseData::class.java)
                         val platformSDKConfig = responseData.platformSDKConfig
                         if (platformSDKConfig != null) {
-                                    webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
+                                    webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}&showHome=${platformSDKConfig.showHome}"
                                 val intent = Intent(context, VoltWebViewActivity::class.java)
                                 intent.putExtra("webViewUrl", webView_url)
                                 intent.putExtra("primaryColor", primary_color)
@@ -337,7 +337,7 @@ class VoltSDKContainer(
                             val responseData = gson.fromJson(response, ResponseData::class.java)
                             val platformSDKConfig = responseData.platformSDKConfig
                             if (platformSDKConfig != null) {
-                                        webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
+                                        webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}&showHome=${platformSDKConfig.showHome}"
                                     val intent = Intent(context, VoltWebViewActivity::class.java)
                                     intent.putExtra("webViewUrl", webView_url)
                                     intent.putExtra("primaryColor", primary_color)
