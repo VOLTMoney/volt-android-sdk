@@ -29,6 +29,7 @@ class VoltSDKContainer(
     private var customerSSToken: String?,
     private var customerCode: String?,
     private var showHeader: String?,
+    private var secondary_color: String?,
     private var onExitSDK: (() -> Unit)? = null
 ) {
     var url = if (environment == STAGING)  "https://app.staging.voltmoney.in/?partnerplatform" else "https://app.voltmoney.in/?partnerplatform"
@@ -134,6 +135,7 @@ class VoltSDKContainer(
                                             intent.putExtra("textColor", headingTextColor)
                                             intent.putExtra("showHeader", showHeader)
                                             intent.putExtra("onExitCallback", myCallback)
+                                            intent.putExtra("secondaryColor", secondary_color)
                                             intent.putExtra(
                                                 "voltPlatformCode",
                                                 partner_platform
@@ -158,6 +160,8 @@ class VoltSDKContainer(
                                             intent.putExtra("primaryColor", primary_color)
                                             intent.putExtra("textColor", headingTextColor)
                                             intent.putExtra("showHeader", showHeader)
+                                            intent.putExtra("secondaryColor", secondary_color)
+
                                             intent.putExtra(
                                                 "voltPlatformCode",
                                                 partner_platform
@@ -308,6 +312,7 @@ class VoltSDKContainer(
                                                 intent.putExtra("primaryColor", primary_color)
                                                 intent.putExtra("textColor", headingTextColor)
                                                 intent.putExtra("showHeader", showHeader)
+                                                intent.putExtra("secondaryColor", secondary_color)
                                                 intent.putExtra(
                                                     "voltPlatformCode",
                                                     partner_platform
@@ -340,6 +345,7 @@ class VoltSDKContainer(
                                                 intent.putExtra("primaryColor", primary_color)
                                                 intent.putExtra("textColor", headingTextColor)
                                                 intent.putExtra("showHeader", showHeader)
+                                                intent.putExtra("secondaryColor", secondary_color)
                                                 intent.putExtra(
                                                     "voltPlatformCode",
                                                     partner_platform
@@ -474,6 +480,7 @@ class VoltSDKContainer(
                             intent.putExtra("voltPlatformCode", partner_platform)
                             intent.putExtra("showHeader", showHeader)
                             intent.putExtra("onExitCallback", myCallback)
+                            intent.putExtra("secondaryColor", secondary_color)
 
                             if (target != "") intent.putExtra("target", target)
                             if (customerSSToken != "") intent.putExtra(
@@ -494,6 +501,7 @@ class VoltSDKContainer(
                             intent.putExtra("textColor", headingTextColor)
                             intent.putExtra("voltPlatformCode", partner_platform)
                             intent.putExtra("showHeader", showHeader)
+                            intent.putExtra("secondaryColor", secondary_color)
 
                             if (target != "") intent.putExtra("target", target)
                             if (customerSSToken != "") intent.putExtra(
@@ -603,6 +611,7 @@ class VoltSDKContainer(
                                 intent.putExtra("voltPlatformCode", partner_platform)
                                 intent.putExtra("showHeader", showHeader)
                                 intent.putExtra("onExitCallback", myCallback)
+                                intent.putExtra("secondaryColor", secondary_color)
 
                                 if (target != "") intent.putExtra("target", target)
                                 if (customerSSToken != "") intent.putExtra(
@@ -622,6 +631,7 @@ class VoltSDKContainer(
                                 intent.putExtra("voltPlatformCode", partner_platform)
                                 intent.putExtra("showHeader", showHeader)
                                 intent.putExtra("onExitCallback", myCallback)
+                                intent.putExtra("secondaryColor", secondary_color)
 
                                 if (target != "") intent.putExtra("target", target)
                                 if (customerSSToken != "") intent.putExtra(
@@ -660,7 +670,9 @@ class VoltSDKContainer(
             "&target=${target?.trim()}" +
             "&isFromNativeSdk=${true}" +
             "&ssoToken=$customerSSToken" +
-            "&voltPlatformCode=$partner_platform"
+            "&voltPlatformCode=$partner_platform" +
+            "&secondaryColor=$secondary_color"
+
     private var myCallback: MyCallback? = null
 
     fun setCallback(myCallback: MyCallback) {
