@@ -8,14 +8,11 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import com.voltmoney.voltmoneySdkSample.databinding.ActivityMainBinding
 import com.voltmoney.voltsdk.VoltAPIResponse
-import com.voltmoney.voltsdk.VoltSDKCallback
 import com.voltmoney.voltsdk.VoltSDKContainer
-import com.voltmoney.voltsdk.models.ENVIRONMENT
 import com.voltmoney.voltsdk.models.PreCreateAppResponse
-import com.voltmoney.voltsdk.models.SHOW_HEADER
 
 
-class MainActivity : AppCompatActivity(), VoltAPIResponse, VoltSDKCallback {
+class MainActivity : AppCompatActivity(), VoltAPIResponse {
     private var voltSDKContainer: VoltSDKContainer? = null
     private lateinit var requestQueue: RequestQueue
     var selectedEnvironment: String = "staging"
@@ -57,15 +54,8 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse, VoltSDKCallback {
             }
         }
 
-        val callback = object : VoltSDKCallback {
-            override fun onExitSDK() {
-                Log.d("TAG", "BVH onExitSDK: ")
-                TODO("Not yet implemented")
-            }
-        }
-
         fun onExitSDK() {
-            Log.d("TAG", "BVH onExitSDK called ")
+            Log.d("TAG", "Volt SDK has been exited")
         }
 
         binding.btVolt.setOnClickListener {
@@ -171,10 +161,6 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse, VoltSDKCallback {
         errorMsg: String?
     ) {
         TODO("Not yet implemented")
-    }
-
-    override fun onExitSDK() {
-        Log.d("TAG", "BVH MainActivity onExitSDK: ")
     }
 
 }

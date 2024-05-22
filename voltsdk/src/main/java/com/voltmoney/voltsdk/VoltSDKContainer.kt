@@ -17,10 +17,6 @@ import org.json.JSONObject
 import com.android.volley.Response as VResponse
 
 
-interface VoltSDKCallback {
-    fun onExitSDK()
-}
-
 public var STAGING = "staging"
 
 class VoltSDKContainer(
@@ -57,7 +53,6 @@ class VoltSDKContainer(
                             // Handle the response here
                             val gson = Gson()
                             val responseData = gson.fromJson(response, ResponseData::class.java)
-                            Log.d("TAG", "BVH ResponseData 111 $responseData ")
                             val platformSDKConfig = responseData.platformSDKConfig
                             var validateSSOTokenURL =
                                 if (environment == STAGING) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
@@ -113,7 +108,7 @@ class VoltSDKContainer(
                                             webView_url +=
                                                 "&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}" +
                                                         "&showVoltLogo=${platformSDKConfig.showVoltLogo}" +
-                                                        "&customLogoUrl=${platformSDKConfig.customLogoUrl}" +
+                                                        "&customLogoUrl=${customLogoUrl}" +
                                                         "&customSupportNumber=${platformSDKConfig.customSupportNumber}" +
                                                         "&showVoltBottomNavBar=$showVoltBottomNavBar" +
                                                         "&showPoweredByVoltMoney=$showPoweredByVoltMoney" +
@@ -232,7 +227,6 @@ class VoltSDKContainer(
                                 // Handle the response here
                                 val gson = Gson()
                                 val responseData = gson.fromJson(response, ResponseData::class.java)
-                                Log.d("TAG", "BVH ResponseData 222 $responseData ")
 
                                 val platformSDKConfig = responseData.platformSDKConfig
                                 var validateSSOTokenURL =
@@ -362,7 +356,6 @@ class VoltSDKContainer(
                         // Handle the response here
                         val gson = Gson()
                         val responseData = gson.fromJson(response, ResponseData::class.java)
-                        Log.d("TAG", "BVH ResponseData 333 ${responseData.platformSDKConfig} ")
 
                         val platformSDKConfig = responseData.platformSDKConfig
                         val dashboardManageFieldsData = platformSDKConfig?.dashboardManageFieldsData
@@ -395,7 +388,7 @@ class VoltSDKContainer(
                             webView_url +=
                                 "&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}" +
                                         "&showVoltLogo=${platformSDKConfig.showVoltLogo}" +
-                                        "&customLogoUrl=${platformSDKConfig.customLogoUrl}" +
+                                        "&customLogoUrl=${customLogoUrl}" +
                                         "&customSupportNumber=${platformSDKConfig.customSupportNumber}" +
                                         "&showVoltBottomNavBar=$showVoltBottomNavBar" +
                                         "&showPoweredByVoltMoney=$showPoweredByVoltMoney" +
@@ -418,8 +411,6 @@ class VoltSDKContainer(
                                         "&emailData=$emailData" +
                                         "&customIconUrl=$customIconUrl" +
                                         "&callData=$callData"
-
-                            Log.d("TAG", "BVH URL Data $webView_url")
 
                             val intent = Intent(context, VoltWebViewActivity::class.java)
                             intent.putExtra("webViewUrl", webView_url)
@@ -493,8 +484,6 @@ class VoltSDKContainer(
                             // Handle the response here
                             val gson = Gson()
                             val responseData = gson.fromJson(response, ResponseData::class.java)
-                            Log.d("TAG", "BVH ResponseData 444 $responseData ")
-
                             val platformSDKConfig = responseData.platformSDKConfig
 
                             val dashboardManageFieldsData = platformSDKConfig?.dashboardManageFieldsData
