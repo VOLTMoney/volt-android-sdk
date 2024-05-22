@@ -16,7 +16,6 @@ import com.voltmoney.voltsdk.models.*
 import org.json.JSONObject
 import com.android.volley.Response as VResponse
 
-
 public var STAGING = "staging"
 
 class VoltSDKContainer(
@@ -64,15 +63,10 @@ class VoltSDKContainer(
                             jsonBody.put(
                                 "ssoToken", customerSSToken
                             )
-                            myCallback = object : MyCallback {
-                                override fun onActivityADestroyed() {
-                                    onExitSDK?.invoke()
-                                }
-
-                            }
 
 
-                            val dashboardManageFieldsData = platformSDKConfig?.dashboardManageFieldsData
+                            val dashboardManageFieldsData =
+                                platformSDKConfig?.dashboardManageFieldsData
                             val csPillData = platformSDKConfig?.csPillData
                             val showVoltBottomNavBar = platformSDKConfig?.showVoltBottomNavBar
                             val showPoweredByVoltMoney = platformSDKConfig?.showPoweredByVoltMoney
@@ -80,12 +74,15 @@ class VoltSDKContainer(
                             val showMyAccountIcon = platformSDKConfig?.showMyAccountIcon
                             val showLogout = platformSDKConfig?.showLogout
                             val showHome = platformSDKConfig?.showHome
-                            val showDashboardManageFields = platformSDKConfig?.showDashboardManageFields
-                            val showDashboardBenefitsForYou =  platformSDKConfig?.showDashboardBenefitsForYou
+                            val showDashboardManageFields =
+                                platformSDKConfig?.showDashboardManageFields
+                            val showDashboardBenefitsForYou =
+                                platformSDKConfig?.showDashboardBenefitsForYou
                             val showCSPill = platformSDKConfig?.showCSPill
                             val customLogoUrl = platformSDKConfig?.customLogoUrl
                             val customSupportNumber = platformSDKConfig?.customSupportNumber
-                            val showTransactionHistory = dashboardManageFieldsData?.showTransactionHistory
+                            val showTransactionHistory =
+                                dashboardManageFieldsData?.showTransactionHistory
                             val showManageLimit = dashboardManageFieldsData?.showManageLimit
                             val showLoanClosure = dashboardManageFieldsData?.showLoanClosure
                             val showAccountDetails = dashboardManageFieldsData?.showAccountDetails
@@ -98,8 +95,7 @@ class VoltSDKContainer(
                             val callData = csPillData?.callData
 
 
-
-                                val jsonObjectRequest =
+                            val jsonObjectRequest =
                                 object : JsonObjectRequest(Request.Method.POST,
                                     validateSSOTokenURL,
                                     jsonBody,
@@ -239,13 +235,70 @@ class VoltSDKContainer(
                                 jsonBody.put(
                                     "ssoToken", customerSSToken
                                 )
+
+                                val dashboardManageFieldsData =
+                                    platformSDKConfig?.dashboardManageFieldsData
+                                val csPillData = platformSDKConfig?.csPillData
+                                val showVoltBottomNavBar = platformSDKConfig?.showVoltBottomNavBar
+                                val showPoweredByVoltMoney =
+                                    platformSDKConfig?.showPoweredByVoltMoney
+                                val showPostLoanJourney = platformSDKConfig?.showPostLoanJourney
+                                val showMyAccountIcon = platformSDKConfig?.showMyAccountIcon
+                                val showLogout = platformSDKConfig?.showLogout
+                                val showHome = platformSDKConfig?.showHome
+                                val showDashboardManageFields =
+                                    platformSDKConfig?.showDashboardManageFields
+                                val showDashboardBenefitsForYou =
+                                    platformSDKConfig?.showDashboardBenefitsForYou
+                                val showCSPill = platformSDKConfig?.showCSPill
+                                val customLogoUrl = platformSDKConfig?.customLogoUrl
+                                val customSupportNumber = platformSDKConfig?.customSupportNumber
+                                val showTransactionHistory =
+                                    dashboardManageFieldsData?.showTransactionHistory
+                                val showManageLimit = dashboardManageFieldsData?.showManageLimit
+                                val showLoanClosure = dashboardManageFieldsData?.showLoanClosure
+                                val showAccountDetails =
+                                    dashboardManageFieldsData?.showAccountDetails
+                                val waData = csPillData?.waData
+                                val showWA = csPillData?.showWA
+                                val showEmail = csPillData?.showEmail
+                                val showCall = csPillData?.showCall
+                                val emailData = csPillData?.emailData
+                                val customIconUrl = csPillData?.customIconUrl
+                                val callData = csPillData?.callData
+
                                 val jsonObjectRequest =
                                     object : JsonObjectRequest(Request.Method.POST,
                                         validateSSOTokenURL,
                                         jsonBody,
                                         VResponse.Listener { response ->
                                             if (platformSDKConfig != null) {
-                                                webView_url += "showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}&showVoltLogo=${platformSDKConfig.showVoltLogo}&customLogoUrl=${platformSDKConfig.customLogoUrl}&customSupportNumber=${platformSDKConfig.customSupportNumber}"
+                                                webView_url +=
+                                                    "&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}" +
+                                                            "&showVoltLogo=${platformSDKConfig.showVoltLogo}" +
+                                                            "&customLogoUrl=${customLogoUrl}" +
+                                                            "&customSupportNumber=${platformSDKConfig.customSupportNumber}" +
+                                                            "&showVoltBottomNavBar=$showVoltBottomNavBar" +
+                                                            "&showPoweredByVoltMoney=$showPoweredByVoltMoney" +
+                                                            "&showPostLoanJourney=$showPostLoanJourney" +
+                                                            "&showMyAccountIcon=$showMyAccountIcon" +
+                                                            "&showLogout=$showLogout" +
+                                                            "&showDashboardManageFields=$showDashboardManageFields" +
+                                                            "&showHome=$showHome" +
+                                                            "&showDashboardBenefitsForYou=$showDashboardBenefitsForYou" +
+                                                            "&showCSPill=$showCSPill" +
+                                                            "&customSupportNumber=$customSupportNumber" +
+                                                            "&showTransactionHistory=$showTransactionHistory" +
+                                                            "&showManageLimit=$showManageLimit" +
+                                                            "&showLoanClosure=$showLoanClosure" +
+                                                            "&showAccountDetails=$showAccountDetails" +
+                                                            "&waData=$waData" +
+                                                            "&showWA=$showWA" +
+                                                            "&showEmail=$showEmail" +
+                                                            "&showCall=$showCall" +
+                                                            "&emailData=$emailData" +
+                                                            "&customIconUrl=$customIconUrl" +
+                                                            "&callData=$callData"
                                                 val intent =
                                                     Intent(
                                                         context,
@@ -367,11 +420,13 @@ class VoltSDKContainer(
                         val showLogout = platformSDKConfig?.showLogout
                         val showHome = platformSDKConfig?.showHome
                         val showDashboardManageFields = platformSDKConfig?.showDashboardManageFields
-                        val showDashboardBenefitsForYou =  platformSDKConfig?.showDashboardBenefitsForYou
+                        val showDashboardBenefitsForYou =
+                            platformSDKConfig?.showDashboardBenefitsForYou
                         val showCSPill = platformSDKConfig?.showCSPill
                         val customLogoUrl = platformSDKConfig?.customLogoUrl
                         val customSupportNumber = platformSDKConfig?.customSupportNumber
-                        val showTransactionHistory = dashboardManageFieldsData?.showTransactionHistory
+                        val showTransactionHistory =
+                            dashboardManageFieldsData?.showTransactionHistory
                         val showManageLimit = dashboardManageFieldsData?.showManageLimit
                         val showLoanClosure = dashboardManageFieldsData?.showLoanClosure
                         val showAccountDetails = dashboardManageFieldsData?.showAccountDetails
@@ -432,9 +487,6 @@ class VoltSDKContainer(
                                 onExitSDK?.invoke()
                             }
 
-                            onExitSDK
-
-
                         } else {
                             val intent = Intent(context, VoltWebViewActivity::class.java)
                             intent.putExtra("webViewUrl", webView_url)
@@ -486,7 +538,8 @@ class VoltSDKContainer(
                             val responseData = gson.fromJson(response, ResponseData::class.java)
                             val platformSDKConfig = responseData.platformSDKConfig
 
-                            val dashboardManageFieldsData = platformSDKConfig?.dashboardManageFieldsData
+                            val dashboardManageFieldsData =
+                                platformSDKConfig?.dashboardManageFieldsData
                             val csPillData = platformSDKConfig?.csPillData
                             val showVoltBottomNavBar = platformSDKConfig?.showVoltBottomNavBar
                             val showPoweredByVoltMoney = platformSDKConfig?.showPoweredByVoltMoney
@@ -494,12 +547,15 @@ class VoltSDKContainer(
                             val showMyAccountIcon = platformSDKConfig?.showMyAccountIcon
                             val showLogout = platformSDKConfig?.showLogout
                             val showHome = platformSDKConfig?.showHome
-                            val showDashboardManageFields = platformSDKConfig?.showDashboardManageFields
-                            val showDashboardBenefitsForYou =  platformSDKConfig?.showDashboardBenefitsForYou
+                            val showDashboardManageFields =
+                                platformSDKConfig?.showDashboardManageFields
+                            val showDashboardBenefitsForYou =
+                                platformSDKConfig?.showDashboardBenefitsForYou
                             val showCSPill = platformSDKConfig?.showCSPill
                             val customLogoUrl = platformSDKConfig?.customLogoUrl
                             val customSupportNumber = platformSDKConfig?.customSupportNumber
-                            val showTransactionHistory = dashboardManageFieldsData?.showTransactionHistory
+                            val showTransactionHistory =
+                                dashboardManageFieldsData?.showTransactionHistory
                             val showManageLimit = dashboardManageFieldsData?.showManageLimit
                             val showLoanClosure = dashboardManageFieldsData?.showLoanClosure
                             val showAccountDetails = dashboardManageFieldsData?.showAccountDetails

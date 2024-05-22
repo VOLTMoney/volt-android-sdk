@@ -9,7 +9,9 @@ import com.android.volley.toolbox.Volley
 import com.voltmoney.voltmoneySdkSample.databinding.ActivityMainBinding
 import com.voltmoney.voltsdk.VoltAPIResponse
 import com.voltmoney.voltsdk.VoltSDKContainer
+import com.voltmoney.voltsdk.models.ENVIRONMENT
 import com.voltmoney.voltsdk.models.PreCreateAppResponse
+import com.voltmoney.voltsdk.models.SHOW_HEADER
 
 
 class MainActivity : AppCompatActivity(), VoltAPIResponse {
@@ -55,7 +57,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
         }
 
         fun onExitSDK() {
-            Log.d("TAG", "Volt SDK has been exited")
+            Log.d("TAG", "VOlt SDK has been exited")
         }
 
         binding.btVolt.setOnClickListener {
