@@ -126,7 +126,12 @@ class VoltWebViewActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         webView = findViewById(R.id.web_view)
 
-        onExitCallback = intent.getSerializableExtra("onExitCallback", MyCallback::class.java)
+        onExitCallback = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra("onExitCallback", MyCallback::class.java)
+        } else {
+            val serializableCallback = intent.getSerializableExtra("onExitCallback")
+            serializableCallback as? MyCallback
+        }
 
         if (intent.getStringExtra("webViewUrl") != null) {
             webUrl = intent.getStringExtra("webViewUrl")!!
