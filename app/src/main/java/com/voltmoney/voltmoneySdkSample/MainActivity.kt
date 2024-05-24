@@ -56,6 +56,9 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
             }
         }
 
+        fun onExitSDK() {
+            Log.d("TAG", "VOlt SDK has been exited")
+        }
 
         binding.btVolt.setOnClickListener {
             voltSDKContainer = binding.etPrimaryColor.text.toString().let { it ->
@@ -85,7 +88,9 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                             target,
                                             customerSSOToken,
                                             customerCode,
-                                            showHeader
+                                            showHeader,
+                                            "000",
+                                            ::onExitSDK
                                         )
                                     }
                                 }
@@ -106,7 +111,9 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                                 target,
                                                 customerSSOToken,
                                                 customerCode,
-                                                showHeader
+                                                showHeader,
+                                                "000",
+                                                ::onExitSDK
                                             )
                                         }
                                     }
@@ -131,7 +138,9 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                 target,
                                 customerSSOToken,
                                 customerCode,
-                                showHeader
+                                showHeader,
+                                "000",
+                                ::onExitSDK
                             )
 
                         } else {

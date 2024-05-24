@@ -18,7 +18,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -51,7 +51,8 @@ dependencies {
    // implementation 'com.github.VOLTMoney:volt-android-sdk:2.0.0'
 
     //When using module
-    implementation project(':voltsdk')
+    //implementation project(':voltsdk')
+    implementation files('libs/voltsdk-release.aar')
 
     //When using aar as dependency
     /*implementation files('libs/voltsdk-release.aar')
