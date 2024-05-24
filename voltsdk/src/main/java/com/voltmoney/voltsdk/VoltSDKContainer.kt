@@ -56,6 +56,8 @@ class VoltSDKContainer(
                             val platformSDKConfig = responseData.platformSDKConfig
                             var validateSSOTokenURL =
                                 if (environment == STAGING) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
+                            Volley.newRequestQueue(context).cache.clear();
+
                             val requestQueue: RequestQueue =
                                 Volley.newRequestQueue(context)
 
@@ -231,6 +233,8 @@ class VoltSDKContainer(
                                 val platformSDKConfig = responseData.platformSDKConfig
                                 var validateSSOTokenURL =
                                     if (environment == STAGING) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
+                                Volley.newRequestQueue(context).cache.clear();
+
                                 val requestQueue: RequestQueue =
                                     Volley.newRequestQueue(context)
 
@@ -407,6 +411,8 @@ class VoltSDKContainer(
             if (target == "") {
                 var getDetailsURL =
                     if (environment == STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
+                Volley.newRequestQueue(context).cache.clear();
+
                 val requestQueue: RequestQueue =
                     Volley.newRequestQueue(context)
                 val stringRequest = object : StringRequest(Request.Method.GET,
@@ -536,6 +542,8 @@ class VoltSDKContainer(
                 } else {
                     var getDetailsURL =
                         if (environment == STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
+                    Volley.newRequestQueue(context).cache.clear();
+
                     val requestQueue: RequestQueue =
                         Volley.newRequestQueue(context)
                     val stringRequest = object : StringRequest(Request.Method.GET,

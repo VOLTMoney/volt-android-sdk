@@ -89,6 +89,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                             customerSSOToken,
                                             customerCode,
                                             showHeader,
+                                            "000",
                                             ::onExitSDK
                                         )
                                     }
@@ -111,6 +112,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                                 customerSSOToken,
                                                 customerCode,
                                                 showHeader,
+                                                "000",
                                                 ::onExitSDK
                                             )
                                         }
@@ -137,6 +139,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                 customerSSOToken,
                                 customerCode,
                                 showHeader,
+                                "000",
                                 ::onExitSDK
                             )
 
