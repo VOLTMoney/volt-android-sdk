@@ -50,7 +50,14 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var webUri: Uri? = null
     private val PERMISSIONS_CAMERA = arrayOf(Manifest.permission.CAMERA)
     private val urlOpenInCustomTab =
-        arrayOf("alpha-", "bfin.in", "docapp.bajajfinserv.in", "bajajfinserv", "enach", "tatacapital")
+        arrayOf(
+            "alpha-",
+            "bfin.in",
+            "docapp.bajajfinserv.in",
+            "bajajfinserv",
+            "enach",
+            "tatacapital"
+        )
     private val shouldNotReloadUrls = arrayOf(
         "otp_verify",
         "kyc_pan_verification",
@@ -147,7 +154,7 @@ class VoltWebViewActivity : AppCompatActivity() {
                 allowContentAccess = true
                 javaScriptCanOpenWindowsAutomatically
                 useWideViewPort = true
-                mediaPlaybackRequiresUserGesture= false
+                mediaPlaybackRequiresUserGesture = false
                 loadsImagesAutomatically = true
                 // mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             }
@@ -585,12 +592,20 @@ class VoltWebViewActivity : AppCompatActivity() {
                 return true
             } else if (checkURLMatchesFromListArray(url, urlOpenInCustomTab)) {
                 Log.d("REACHED THERE IN THE", "")
-               var  customTabsIntent = CustomTabsIntent.Builder().setInitialActivityHeightPx(400,
+                var customTabsIntent = CustomTabsIntent.Builder().setInitialActivityHeightPx(
+                    400,
                     CustomTabsIntent.ACTIVITY_HEIGHT_FIXED
                 )
-                customTabsIntent!!.setToolbarColor(ContextCompat.getColor(this@VoltWebViewActivity, androidx.appcompat.R.color.material_blue_grey_800));
+                customTabsIntent!!.setToolbarColor(
+                    ContextCompat.getColor(
+                        this@VoltWebViewActivity,
+                        androidx.appcompat.R.color.material_blue_grey_800
+                    )
+                );
                 openCustomTab(this@VoltWebViewActivity, customTabsIntent!!.build(), Uri.parse(url));
 
+            } else if (url?.contains("http://google.com/exitAndroidSDK")) {
+                finish();
             }
             // open camera/document picker
             else {
