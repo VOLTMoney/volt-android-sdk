@@ -635,10 +635,7 @@ class VoltWebViewActivity : AppCompatActivity() {
                 );
                 openCustomTab(this@VoltWebViewActivity, customTabsIntent!!.build(), Uri.parse(url));
 
-            } else if (url?.contains("http://google.com/exitAndroidSDK")) {
-                finish();
             }
-            // open camera/document picker
             else {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 webView.context.startActivity(intent)
