@@ -30,7 +30,7 @@ class VoltSDKContainer(
     private var customerCode: String?,
     private var showHeader: String?,
     private var secondary_color: String?,
-    private var onExitSDK: (() -> Unit)? = null
+    private var onExitSDK: ((String) -> Unit)? = null
 ) {
     var url = if (environment == STAGING)  "https://app.staging.voltmoney.in/?partnerplatform" else "https://app.voltmoney.in/?partnerplatform"
 
@@ -105,7 +105,7 @@ class VoltSDKContainer(
                                     VResponse.Listener { response ->
                                         if (platformSDKConfig != null) {
                                             webView_url +=
-                                                "&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}" +
+                                                "&showVoltDefaultHeader=${platformSDKConfig.showVoltDefaultHeader}" +
                                                         "&showVoltLogo=${platformSDKConfig.showVoltLogo}" +
                                                         "&customLogoUrl=${customLogoUrl}" +
                                                         "&customSupportNumber=${platformSDKConfig.customSupportNumber}" +
@@ -153,7 +153,7 @@ class VoltSDKContainer(
                                             )
                                             startActivity(context, intent, null)
                                             VoltWebViewActivity.onExitVolt = {
-                                                onExitSDK?.invoke()
+                                                onExitSDK?.invoke(it)
                                             }
                                         } else {
                                             val intent =
@@ -181,7 +181,7 @@ class VoltSDKContainer(
                                             )
                                             startActivity(context, intent, null)
                                             VoltWebViewActivity.onExitVolt = {
-                                                onExitSDK?.invoke()
+                                                onExitSDK?.invoke(it)
                                             }
                                         }
                                     },
@@ -282,7 +282,7 @@ class VoltSDKContainer(
                                         VResponse.Listener { response ->
                                             if (platformSDKConfig != null) {
                                                 webView_url +=
-                                                    "&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}" +
+                                                    "&showVoltDefaultHeader=${platformSDKConfig.showVoltDefaultHeader}" +
                                                             "&showVoltLogo=${platformSDKConfig.showVoltLogo}" +
                                                             "&customLogoUrl=${customLogoUrl}" +
                                                             "&customSupportNumber=${platformSDKConfig.customSupportNumber}" +
@@ -337,7 +337,7 @@ class VoltSDKContainer(
                                                 )
                                                 startActivity(context, intent, null)
                                                 VoltWebViewActivity.onExitVolt = {
-                                                    onExitSDK?.invoke()
+                                                    onExitSDK?.invoke(it)
                                                 }
                                             } else {
                                                 val intent =
@@ -370,7 +370,7 @@ class VoltSDKContainer(
                                                 )
                                                 startActivity(context, intent, null)
                                                 VoltWebViewActivity.onExitVolt = {
-                                                    onExitSDK?.invoke()
+                                                    onExitSDK?.invoke(it)
                                                 }
                                             }
                                         },
@@ -453,13 +453,13 @@ class VoltSDKContainer(
 
                         if (platformSDKConfig != null) {
                             webView_url +=
-                                "&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}" +
+                                "&showVoltDefaultHeader=${platformSDKConfig.showVoltDefaultHeader}" +
                                         "&showVoltLogo=${platformSDKConfig.showVoltLogo}" +
                                         "&customLogoUrl=${customLogoUrl}" +
                                         "&customSupportNumber=${platformSDKConfig.customSupportNumber}" +
                                         "&showVoltBottomNavBar=$showVoltBottomNavBar" +
                                         "&showPoweredByVoltMoney=$showPoweredByVoltMoney" +
-                                        "&showPostLoanJourney=$showPostLoanJourney" +
+                                        "&showPostLoanJourney=true" +
                                         "&showMyAccountIcon=$showMyAccountIcon" +
                                         "&showLogout=$showLogout" +
                                         "&showDashboardManageFields=$showDashboardManageFields" +
@@ -497,7 +497,7 @@ class VoltSDKContainer(
                             intent.putExtra("platformAuthToken", platformAuthToken)
                             startActivity(context, intent, null)
                             VoltWebViewActivity.onExitVolt = {
-                                onExitSDK?.invoke()
+                                onExitSDK?.invoke(it)
                             }
 
                         } else {
@@ -517,7 +517,7 @@ class VoltSDKContainer(
                             intent.putExtra("platformAuthToken", platformAuthToken)
                             startActivity(context, intent, null)
                             VoltWebViewActivity.onExitVolt = {
-                                onExitSDK?.invoke()
+                                onExitSDK?.invoke(it)
                             }
                         }
                     },
@@ -553,7 +553,6 @@ class VoltSDKContainer(
                             val gson = Gson()
                             val responseData = gson.fromJson(response, ResponseData::class.java)
                             val platformSDKConfig = responseData.platformSDKConfig
-
                             val dashboardManageFieldsData =
                                 platformSDKConfig?.dashboardManageFieldsData
                             val csPillData = platformSDKConfig?.csPillData
@@ -586,7 +585,7 @@ class VoltSDKContainer(
 
                             if (platformSDKConfig != null) {
                                 webView_url +=
-                                    "&showDefaultVoltHeader=${platformSDKConfig.showDefaultVoltHeader}" +
+                                    "&showVoltDefaultHeader=${platformSDKConfig.showVoltDefaultHeader}" +
                                             "&showVoltLogo=${platformSDKConfig.showVoltLogo}" +
                                             "&customLogoUrl=${platformSDKConfig.customLogoUrl}" +
                                             "&customSupportNumber=${platformSDKConfig.customSupportNumber}" +
@@ -629,7 +628,7 @@ class VoltSDKContainer(
                                 intent.putExtra("platformAuthToken", platformAuthToken)
                                 startActivity(context, intent, null)
                                 VoltWebViewActivity.onExitVolt = {
-                                    onExitSDK?.invoke()
+                                    onExitSDK?.invoke(it)
                                 }
                             } else {
                                 val intent = Intent(context, VoltWebViewActivity::class.java)
@@ -649,7 +648,7 @@ class VoltSDKContainer(
                                 intent.putExtra("platformAuthToken", platformAuthToken)
                                 startActivity(context, intent, null)
                                 VoltWebViewActivity.onExitVolt = {
-                                    onExitSDK?.invoke()
+                                    onExitSDK?.invoke(it)
                                 }
                             }
                         },

@@ -5,7 +5,7 @@ data class ResponseData(
 )
 
 data class PlatformSDKConfig(
-    var showDefaultVoltHeader: Boolean,
+    var showVoltDefaultHeader: Boolean,
     var showVoltLogo: Boolean,
     var customLogoUrl: String,
     var customSupportNumber: String,
