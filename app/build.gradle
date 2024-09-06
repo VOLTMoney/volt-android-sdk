@@ -51,8 +51,8 @@ dependencies {
    // implementation 'com.github.VOLTMoney:volt-android-sdk:2.0.0'
 
     //When using module
-    //implementation project(':voltsdk')
-    implementation files('libs/voltsdk-release.aar')
+    implementation project(':voltsdk')
+//    implementation files('libs/voltsdk-release.aar')
 
     //When using aar as dependency
     /*implementation files('libs/voltsdk-release.aar')

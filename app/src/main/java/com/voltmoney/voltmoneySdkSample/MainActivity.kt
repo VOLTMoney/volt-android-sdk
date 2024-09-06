@@ -56,9 +56,12 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
             }
         }
 
-        fun onExitSDK() {
-            Log.d("TAG", "VOlt SDK has been exited")
+        fun onExitSDK(param: String = "DefaultExitMessage") {
+            Log.d("TAG", param)
         }
+
+
+
 
         binding.btVolt.setOnClickListener {
             voltSDKContainer = binding.etPrimaryColor.text.toString().let { it ->

@@ -11,6 +11,8 @@ import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.provider.MediaStore
 import android.util.Log
@@ -63,6 +65,10 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var webUrl: String? = null
     private var webUri: Uri? = null
     private val PERMISSIONS_CAMERA = arrayOf(Manifest.permission.CAMERA)
+
+    private var doubleBackToExitPressedOnce = false
+    private val handler = Handler(Looper.getMainLooper())
+
     private val urlOpenInCustomTab =
         arrayOf(
             "alpha-",
@@ -117,7 +123,7 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var showHeader: String? = "Yes"
     private var onExitCallback: MyCallback? = null
     companion object {
-        lateinit var onExitVolt: () -> Unit
+        lateinit var onExitVolt: (String) -> Unit
     }
 
 
@@ -214,9 +220,23 @@ class VoltWebViewActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed()
+            return
+        }
+
+
+        this.doubleBackToExitPressedOnce = true
+        Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
+
+        handler.postDelayed({
+            doubleBackToExitPressedOnce = false
+        }, 2000) // 2 seconds delay
+    }
     override fun onDestroy() {
         super.onDestroy()
-       onExitVolt()
+       onExitVolt("")
     }
 
 
@@ -618,6 +638,16 @@ class VoltWebViewActivity : AppCompatActivity() {
                  this@VoltWebViewActivity.startActivity(myIntent)
                  return  true
              }
+            if(url.contains(("closeActivity"))){
+                finish()
+                return  false
+            }
+
+            if(url.contains(("FAQ_CLICKED"))){
+                finish()
+                onExitVolt("FAQ_CLICKED")
+                return  false
+            }
             if (url.contains(webUri!!.host!!)) {
                 view.loadUrl(url)
                 return true
