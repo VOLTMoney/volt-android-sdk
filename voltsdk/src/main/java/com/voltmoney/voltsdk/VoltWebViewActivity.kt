@@ -122,9 +122,11 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var platformAuthToken: String? = ""
     private var showHeader: String? = "Yes"
     private var onExitCallback: MyCallback? = null
-    companion object {
-        lateinit var onExitVolt: (String) -> Unit
-    }
+        companion object {
+            lateinit var onExitVolt: (String) -> Unit
+            val isOnExitVoltInitialized: Boolean
+                get() = this::onExitVolt.isInitialized
+        }
 
 
 
@@ -236,7 +238,8 @@ class VoltWebViewActivity : AppCompatActivity() {
     }
     override fun onDestroy() {
         super.onDestroy()
-       onExitVolt("")
+//        if(isOnExitVoltInitialized)
+//       onExitVolt("")
     }
 
 
@@ -377,10 +380,10 @@ class VoltWebViewActivity : AppCompatActivity() {
             Log.d("CLOSE CALLED", "CLOSE CALLED")
             try {
                 try {
-                    val myIntent = Intent(this@VoltWebViewActivity, VoltWebViewActivity::class.java)
-                    myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    this@VoltWebViewActivity.startActivity(myIntent)
+//                    val myIntent = Intent(this@VoltWebViewActivity, VoltWebViewActivity::class.java)
+//                    myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+//                    myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                    this@VoltWebViewActivity.startActivity(myIntent)
 
                     Log.d("CLOSE CALL RECEIVED", "CLOSE CALL RECEIVED" + mWebviewPop)
                 } catch (e: Exception) {
@@ -632,10 +635,10 @@ class VoltWebViewActivity : AppCompatActivity() {
 
 
              if(url.contains(("closePop"))){
-                 val myIntent = Intent(this@VoltWebViewActivity, VoltWebViewActivity::class.java)
-                 myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                 myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                 this@VoltWebViewActivity.startActivity(myIntent)
+//                 val myIntent = Intent(this@VoltWebViewActivity, VoltWebViewActivity::class.java)
+//                 myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+//                 myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                 this@VoltWebViewActivity.startActivity(myIntent)
                  return  true
              }
             if(url.contains(("closeActivity"))){
@@ -643,11 +646,12 @@ class VoltWebViewActivity : AppCompatActivity() {
                 return  false
             }
 
-            if(url.contains(("FAQ_CLICKED"))){
-                finish()
-                onExitVolt("FAQ_CLICKED")
-                return  false
-            }
+//            if(url.contains(("FAQ_CLICKED"))){
+//                finish()
+//                if(isOnExitVoltInitialized)
+//                onExitVolt("FAQ_CLICKED")
+//                return  false
+//            }
             if (url.contains(webUri!!.host!!)) {
                 view.loadUrl(url)
                 return true
