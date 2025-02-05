@@ -42,6 +42,8 @@ class VoltSDKContainer(
                 Log.e("TAG", "Please enter Customer Code")
             } else {
                 if (target?.trim() == "") {
+
+
                     var getDetailsURL =
                         if (environment == STAGING) "https://api.staging.voltmoney.in/app/pf/details/" else "https://api.voltmoney.in/app/pf/details/"
                     val requestQueue: RequestQueue =
@@ -51,9 +53,12 @@ class VoltSDKContainer(
                         getDetailsURL,
                         VResponse.Listener { response ->
                             // Handle the response here
+
                             val gson = Gson()
                             val responseData = gson.fromJson(response, ResponseData::class.java)
                             val platformSDKConfig = responseData.platformSDKConfig
+
+
                             var validateSSOTokenURL =
                                 if (environment == STAGING) "https://api.staging.voltmoney.in/api/client/validate/ssoToken/${customerCode}" else "https://api.voltmoney.in/api/client/validate/ssoToken/${customerCode}"
                             Volley.newRequestQueue(context).cache.clear();
@@ -158,6 +163,9 @@ class VoltSDKContainer(
                                         } else {
                                             val intent =
                                                 Intent(context, VoltWebViewActivity::class.java)
+                                            if(partner_platform == "PRUDENT"){
+                                                webView_url += "&showVoltDefaultHeader=false&showHome=false&callData=18004195051&emailData=las@fundzbazar.com"
+                                            }
                                             intent.putExtra("webViewUrl", webView_url)
                                             intent.putExtra("primaryColor", primary_color)
                                             intent.putExtra("textColor", headingTextColor)
@@ -679,6 +687,8 @@ class VoltSDKContainer(
             "&ssoToken=$customerSSToken" +
             "&voltPlatformCode=$partner_platform" +
             "&secondaryColor=$secondary_color"
+
+
 
     private var myCallback: MyCallback? = null
 

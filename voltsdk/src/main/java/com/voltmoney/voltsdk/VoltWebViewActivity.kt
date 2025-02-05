@@ -2,6 +2,8 @@ package com.voltmoney.voltsdk
 
 import android.Manifest
 import android.app.Activity
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -23,6 +25,7 @@ import android.webkit.ConsoleMessage
 import android.webkit.CookieManager
 import android.webkit.CookieSyncManager
 import android.webkit.HttpAuthHandler
+import android.webkit.JavascriptInterface
 import android.webkit.PermissionRequest
 import android.webkit.RenderProcessGoneDetail
 import android.webkit.SafeBrowsingResponse
@@ -44,7 +47,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.browser.customtabs.CustomTabsCallback
+import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsServiceConnection
+import androidx.browser.customtabs.CustomTabsSession
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -65,6 +71,9 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var webUrl: String? = null
     private var webUri: Uri? = null
     private val PERMISSIONS_CAMERA = arrayOf(Manifest.permission.CAMERA)
+    private lateinit var customTabsClient: CustomTabsClient
+    private lateinit var customTabsSession: CustomTabsSession
+    public var lenderId: String? = null
 
     private var doubleBackToExitPressedOnce = false
     private val handler = Handler(Looper.getMainLooper())
@@ -76,7 +85,8 @@ class VoltWebViewActivity : AppCompatActivity() {
             "docapp.bajajfinserv.in",
             "bajajfinserv",
             "enach",
-            "tatacapital"
+            "tatacapital",
+            "volt-b2b"
         )
     private val shouldNotReloadUrls = arrayOf(
         "otp_verify",
@@ -129,6 +139,19 @@ class VoltWebViewActivity : AppCompatActivity() {
         }
 
 
+    inner  class WebAppInterface(private val context: Context) {
+        @JavascriptInterface
+        fun postMessage(message: String) {
+            Log.d("WebAppInterface", "Message received: $message")
+
+            if(message.contains("DSP")){
+                lenderId = "DSP"
+                Log.d("NIYO", "INSIDE DSP")
+            }
+            // Handle the message here
+        }
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -140,6 +163,30 @@ class VoltWebViewActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         webView = findViewById(R.id.web_view)
+        Log.d("VOLT", "ON ########## CREATE")
+        // Connect to Custom Tabs Service
+        CustomTabsClient.bindCustomTabsService(
+            this,
+            "com.android.chrome",
+            object : CustomTabsServiceConnection() {
+                override fun onCustomTabsServiceConnected(
+                    name: ComponentName, client: CustomTabsClient
+                ) {
+                    customTabsClient = client
+                    customTabsSession = customTabsClient.newSession(object :
+                        CustomTabsCallback() {
+                        override fun onPostMessage(message: String, extras: Bundle?) {
+                            super.onPostMessage(message, extras)
+                            // Handle the postMessage here
+                            Log.d("PostMessage Sagar", "Received: $message")
+                        }
+                    })!!
+                }
+
+                override fun onServiceDisconnected(name: ComponentName?) {
+                    // Handle disconnection
+                }
+            })
 
         onExitCallback = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getSerializableExtra("onExitCallback", MyCallback::class.java)
@@ -177,7 +224,6 @@ class VoltWebViewActivity : AppCompatActivity() {
                 CookieManager.getInstance().setAcceptCookie(true);
             }
             webUri = Uri.parse(webUrl)
-            Log.d("URL GOT IN WEBVIEW", webUrl.toString())
             webView.settings.apply {
                 defaultTextEncodingName = "utf-8"
                 javaScriptEnabled = true
@@ -195,7 +241,7 @@ class VoltWebViewActivity : AppCompatActivity() {
 
             webView.webViewClient = VoltWebViewClient()
             webView.webChromeClient = VoltWebChromeClient()
-
+            webView.addJavascriptInterface(WebAppInterface(this), "AndroidInterface")
 
         } else {
             Log.d("TAG", "onCreate of SDK 2")
@@ -219,8 +265,11 @@ class VoltWebViewActivity : AppCompatActivity() {
             }
             webView.webViewClient = VoltWebViewClient()
             webView.webChromeClient = VoltWebChromeClient()
+            webView.addJavascriptInterface(WebAppInterface(this), "AndroidInterface")
+
         }
     }
+
 
     override fun onBackPressed() {
         if (doubleBackToExitPressedOnce) {
@@ -288,7 +337,6 @@ class VoltWebViewActivity : AppCompatActivity() {
 
         @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
         override fun onPermissionRequest(request: PermissionRequest?) {
-            Log.d("HERE IN THE REQUEST", request.toString())
             this@VoltWebViewActivity.runOnUiThread { request!!.grant(request.resources) }
 
         }
@@ -299,7 +347,6 @@ class VoltWebViewActivity : AppCompatActivity() {
         }
 
         override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
-            Log.d("WebView SGAR", consoleMessage!!.message());
             return true
         }
 
@@ -350,11 +397,13 @@ class VoltWebViewActivity : AppCompatActivity() {
             )
                 .create()
             builder?.setTitle("")
-            builder!!.setButton(AlertDialog.BUTTON_NEGATIVE, "Close", {
-                //do your own idea.
-                    dialog, which ->
-                mWebviewPop!!.destroy()
-            })
+            builder!!.setButton(
+                AlertDialog.BUTTON_NEUTRAL,
+                "Close"
+            ) { dialog, _ ->
+                mWebviewPop?.destroy()
+                dialog.dismiss()
+            }
             builder?.setView(mWebviewPop)
 
 
@@ -388,7 +437,7 @@ class VoltWebViewActivity : AppCompatActivity() {
                     Log.d("CLOSE CALL RECEIVED", "CLOSE CALL RECEIVED" + mWebviewPop)
                 } catch (e: Exception) {
                     // TODO: Write an exception handler to notify user
-                }
+                 }
 
             } catch (e: Exception) {
                 Log.e("ERROR RECEIVED", e.toString())
@@ -630,8 +679,6 @@ class VoltWebViewActivity : AppCompatActivity() {
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-            Log.d("RECHED HERE", url)
-            Log.d("RECHED HERE AS WELL", checkURLMatchesFromListArray(url, urlOpenInCustomTab).toString())
 
 
              if(url.contains(("closePop"))){
@@ -652,11 +699,10 @@ class VoltWebViewActivity : AppCompatActivity() {
 //                onExitVolt("FAQ_CLICKED")
 //                return  false
 //            }
-            if (url.contains(webUri!!.host!!)) {
+            if (url.contains(webUri!!.host!!) || url.contains("razorpay") || url.contains("enach_id") || lenderId === "DSP") {
                 view.loadUrl(url)
                 return true
             } else if (checkURLMatchesFromListArray(url, urlOpenInCustomTab)) {
-                Log.d("REACHED THERE IN THE", "")
                 var customTabsIntent = CustomTabsIntent.Builder().setInitialActivityHeightPx(
                     400,
                     CustomTabsIntent.ACTIVITY_HEIGHT_FIXED
@@ -669,10 +715,10 @@ class VoltWebViewActivity : AppCompatActivity() {
                 );
                 openCustomTab(this@VoltWebViewActivity, customTabsIntent!!.build(), Uri.parse(url));
 
-            } else if (url?.contains("http://google.com/exitAndroidSDK")) {
+            } else if (url?.contains("http://google.com/exitAndroidSDK")){
                 finish();
             }
-            // open camera/document picker
+            // camera / docuement picker (schema)
             else {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 webView.context.startActivity(intent)
@@ -790,6 +836,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             // that custom chrome tab with intent by passing its
             // package name.
             customTabsIntent.intent.setPackage(packageName)
+
 
 
             // in that custom tab intent we are passing
