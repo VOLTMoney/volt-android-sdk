@@ -146,7 +146,6 @@ class VoltWebViewActivity : AppCompatActivity() {
 
             if(message.contains("DSP")){
                 lenderId = "DSP"
-                Log.d("NIYO", "INSIDE DSP")
             }
             // Handle the message here
         }
