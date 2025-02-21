@@ -681,10 +681,10 @@ class VoltWebViewActivity : AppCompatActivity() {
 
 
              if(url.contains(("closePop"))){
-//                 val myIntent = Intent(this@VoltWebViewActivity, VoltWebViewActivity::class.java)
-//                 myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-//                 myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                 this@VoltWebViewActivity.startActivity(myIntent)
+                 val myIntent = Intent(this@VoltWebViewActivity, VoltWebViewActivity::class.java)
+                 myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                 myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                 this@VoltWebViewActivity.startActivity(myIntent)
                  return  true
              }
             if(url.contains(("closeActivity"))){
@@ -692,12 +692,12 @@ class VoltWebViewActivity : AppCompatActivity() {
                 return  false
             }
 
-//            if(url.contains(("FAQ_CLICKED"))){
-//                finish()
-//                if(isOnExitVoltInitialized)
-//                onExitVolt("FAQ_CLICKED")
-//                return  false
-//            }
+            if(url.contains(("FAQ_CLICKED"))){
+                finish()
+                if(isOnExitVoltInitialized)
+                onExitVolt("FAQ_CLICKED")
+                return  false
+            }
             if (url.contains(webUri!!.host!!) || url.contains("razorpay") || url.contains("enach_id") || lenderId === "DSP") {
                 view.loadUrl(url)
                 return true

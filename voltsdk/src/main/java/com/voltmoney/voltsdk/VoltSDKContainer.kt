@@ -223,7 +223,7 @@ class VoltSDKContainer(
                     }
                     requestQueue.add(stringRequest)
                 } else {
-                    if (target?.trim() != "manageLimit" && target?.trim() != "account" && target?.trim() != "payment" && target?.trim() != "withdraw") {
+                    if (target?.trim() != "manageLimit" && target?.trim() != "account" && target?.trim() != "payment" && target?.trim() != "withdraw" && target?.trim() != "transaction") {
                         Log.e("TAG", "The target page does not exist")
                     } else {
                         var getDetailsURL =
@@ -545,7 +545,7 @@ class VoltSDKContainer(
                 requestQueue.add(stringRequest)
 
             } else {
-                if (target?.trim() != "manageLimit" && target?.trim() != "account" && target?.trim() != "payment" && target?.trim() != "withdraw") {
+                if (target?.trim() != "manageLimit" && target?.trim() != "account" && target?.trim() != "payment" && target?.trim() != "withdraw" && target?.trim() != "transaction") {
                     Log.e("TAG", "The target page does not exist")
                 } else {
                     var getDetailsURL =
