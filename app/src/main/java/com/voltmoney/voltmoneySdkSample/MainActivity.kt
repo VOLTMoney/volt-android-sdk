@@ -63,6 +63,8 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
 
 
 
+
+
         binding.btVolt.setOnClickListener {
             voltSDKContainer = binding.etPrimaryColor.text.toString().let { it ->
                 if (it.length == 6) {
