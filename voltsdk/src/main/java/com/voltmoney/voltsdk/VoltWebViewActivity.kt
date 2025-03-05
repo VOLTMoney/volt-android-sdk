@@ -285,9 +285,11 @@ class VoltWebViewActivity : AppCompatActivity() {
         }, 2000) // 2 seconds delay
     }
     override fun onDestroy() {
+        if(isOnExitVoltInitialized)
+        {
+            onExitVolt("")
+        }
         super.onDestroy()
-//        if(isOnExitVoltInitialized)
-//       onExitVolt("")
     }
 
 
