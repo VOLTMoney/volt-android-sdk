@@ -171,15 +171,22 @@ class VoltWebViewActivity : AppCompatActivity() {
                 override fun onCustomTabsServiceConnected(
                     name: ComponentName, client: CustomTabsClient
                 ) {
+
                     customTabsClient = client
-                    customTabsSession = customTabsClient.newSession(object :
-                        CustomTabsCallback() {
-                        override fun onPostMessage(message: String, extras: Bundle?) {
-                            super.onPostMessage(message, extras)
-                            // Handle the postMessage here
-                            Log.d("PostMessage Sagar", "Received: $message")
-                        }
-                    })!!
+
+                    if(customTabsClient === null) {
+                        Log.d("CustomTab Client not initiated", "")
+                    }
+                    else {
+                        customTabsSession = customTabsClient.newSession(object :
+                            CustomTabsCallback() {
+                            override fun onPostMessage(message: String, extras: Bundle?) {
+                                super.onPostMessage(message, extras)
+                                // Handle the postMessage here
+                                Log.d("PostMessage Sagar", "Received: $message")
+                            }
+                        })!!
+                    }
                 }
 
                 override fun onServiceDisconnected(name: ComponentName?) {
@@ -697,7 +704,9 @@ class VoltWebViewActivity : AppCompatActivity() {
             if(url.contains(("FAQ_CLICKED"))){
                 finish()
                 if(isOnExitVoltInitialized)
-                onExitVolt("FAQ_CLICKED")
+                {
+                    onExitVolt("FAQ_CLICKED")
+                }
                 return  false
             }
             if (url.contains(webUri!!.host!!) || url.contains("razorpay") || url.contains("enach_id") || lenderId === "DSP") {
