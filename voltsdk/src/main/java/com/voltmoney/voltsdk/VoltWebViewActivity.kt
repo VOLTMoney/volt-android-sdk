@@ -724,7 +724,7 @@ class VoltWebViewActivity : AppCompatActivity() {
                 );
                 openCustomTab(this@VoltWebViewActivity, customTabsIntent!!.build(), Uri.parse(url));
 
-            } else if (url?.contains("http://google.com/exitAndroidSDK")){
+            } else if (url.contains("http://google.com/exitAndroidSDK")){
                 finish();
             }
             // camera / docuement picker (schema)
