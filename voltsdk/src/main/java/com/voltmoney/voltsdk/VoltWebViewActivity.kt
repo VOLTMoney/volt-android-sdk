@@ -60,6 +60,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.core.view.WindowCompat
 
 
 class VoltWebViewActivity : AppCompatActivity() {
@@ -155,6 +156,7 @@ class VoltWebViewActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_volt_main)
         verifyCameraPermissions(this)
         toolbar = findViewById(R.id.toolbar)
@@ -178,7 +180,7 @@ class VoltWebViewActivity : AppCompatActivity() {
                         Log.d("CustomTab Client not initiated", "")
                     }
                     else {
-                        customTabsSession = customTabsClient.newSession(object :
+                        customTabsSession = customTabsClient?.newSession(object :
                             CustomTabsCallback() {
                             override fun onPostMessage(message: String, extras: Bundle?) {
                                 super.onPostMessage(message, extras)
