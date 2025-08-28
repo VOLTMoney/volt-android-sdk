@@ -72,7 +72,9 @@ class VoltWebViewActivity : AppCompatActivity() {
     private var webUrl: String? = null
     private var webUri: Uri? = null
     private val PERMISSIONS_CAMERA = arrayOf(Manifest.permission.CAMERA)
-    private lateinit var customTabsClient: CustomTabsClient
+//    private lateinit var customTabsClient: CustomTabsClient
+    var customTabsClient: CustomTabsClient? = null
+
     private lateinit var customTabsSession: CustomTabsSession
     public var lenderId: String? = null
 
@@ -166,35 +168,35 @@ class VoltWebViewActivity : AppCompatActivity() {
         webView = findViewById(R.id.web_view)
         Log.d("VOLT", "ON ########## CREATE")
         // Connect to Custom Tabs Service
-        CustomTabsClient.bindCustomTabsService(
-            this,
-            "com.android.chrome",
-            object : CustomTabsServiceConnection() {
-                override fun onCustomTabsServiceConnected(
-                    name: ComponentName, client: CustomTabsClient
-                ) {
-
-                    customTabsClient = client
-
-                    if(customTabsClient === null) {
-                        Log.d("CustomTab Client not initiated", "")
-                    }
-                    else {
-                        customTabsSession = customTabsClient?.newSession(object :
-                            CustomTabsCallback() {
-                            override fun onPostMessage(message: String, extras: Bundle?) {
-                                super.onPostMessage(message, extras)
-                                // Handle the postMessage here
-                                Log.d("PostMessage Sagar", "Received: $message")
-                            }
-                        })!!
-                    }
-                }
-
-                override fun onServiceDisconnected(name: ComponentName?) {
-                    // Handle disconnection
-                }
-            })
+//        CustomTabsClient.bindCustomTabsService(
+//            this,
+//            "com.android.chrome",
+//            object : CustomTabsServiceConnection() {
+//                override fun onCustomTabsServiceConnected(
+//                    name: ComponentName, client: CustomTabsClient
+//                ) {
+//
+//                    customTabsClient = client
+//
+//                    if(customTabsClient === null) {
+//                        Log.d("CustomTab Client not initiated", "")
+//                    }
+//                    else {
+//                        customTabsSession = customTabsClient?.newSession(object :
+//                            CustomTabsCallback() {
+//                            override fun onPostMessage(message: String, extras: Bundle?) {
+//                                super.onPostMessage(message, extras)
+//                                // Handle the postMessage here
+//                                Log.d("PostMessage Sagar", "Received: $message")
+//                            }
+//                        })!!
+//                    }
+//                }
+//
+//                override fun onServiceDisconnected(name: ComponentName?) {
+//                    // Handle disconnection
+//                }
+//            })
 
         onExitCallback = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getSerializableExtra("onExitCallback", MyCallback::class.java)
