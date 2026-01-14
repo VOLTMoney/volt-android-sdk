@@ -47,7 +47,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.voltmoney'
                 artifactId = 'volt-android-sdk'
-                version = '0.1'
+                version = '2.0'
             }
         }
     }
