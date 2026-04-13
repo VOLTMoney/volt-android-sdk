@@ -712,7 +712,7 @@ class VoltWebViewActivity : AppCompatActivity() {
                 }
                 return  false
             }
-            if (url.contains(webUri!!.host!!) || url.contains("razorpay") || url.contains("enach_id") || lenderId === "DSP") {
+            if (url.contains(webUri!!.host!!) || url.contains("razorpay") || url.contains("enach_id") || lenderId === "DSP" || url.contains("mfcentral") || url.contains("mfc-redirect")) {
                 view.loadUrl(url)
                 return true
             } else if (checkURLMatchesFromListArray(url, urlOpenInCustomTab)) {
