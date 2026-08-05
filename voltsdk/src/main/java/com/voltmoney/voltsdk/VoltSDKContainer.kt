@@ -30,6 +30,7 @@ class VoltSDKContainer(
     private var customerCode: String?,
     private var showHeader: String?,
     private var secondary_color: String?,
+    private val ref: String? = null,
     private var onExitSDK: ((String) -> Unit)? = null
 ) {
     var url = if (environment == STAGING)  "https://app.staging.voltmoney.in/?partnerplatform" else "https://app.voltmoney.in/?partnerplatform"
@@ -156,10 +157,7 @@ class VoltSDKContainer(
                                                 "platformAuthToken",
                                                 platformAuthToken
                                             )
-                                            startActivity(context, intent, null)
-                                            VoltWebViewActivity.onExitVolt = {
-                                                onExitSDK?.invoke(it)
-                                            }
+                                            startVoltWebViewActivity(intent)
                                         } else {
                                             val intent =
                                                 Intent(context, VoltWebViewActivity::class.java)
@@ -187,10 +185,7 @@ class VoltSDKContainer(
                                                 "platformAuthToken",
                                                 platformAuthToken
                                             )
-                                            startActivity(context, intent, null)
-                                            VoltWebViewActivity.onExitVolt = {
-                                                onExitSDK?.invoke(it)
-                                            }
+                                            startVoltWebViewActivity(intent)
                                         }
                                     },
                                     VResponse.ErrorListener { error ->
@@ -343,10 +338,7 @@ class VoltSDKContainer(
                                                     "platformAuthToken",
                                                     platformAuthToken
                                                 )
-                                                startActivity(context, intent, null)
-                                                VoltWebViewActivity.onExitVolt = {
-                                                    onExitSDK?.invoke(it)
-                                                }
+                                                startVoltWebViewActivity(intent)
                                             } else {
                                                 val intent =
                                                     Intent(
@@ -376,10 +368,7 @@ class VoltSDKContainer(
                                                     "platformAuthToken",
                                                     platformAuthToken
                                                 )
-                                                startActivity(context, intent, null)
-                                                VoltWebViewActivity.onExitVolt = {
-                                                    onExitSDK?.invoke(it)
-                                                }
+                                                startVoltWebViewActivity(intent)
                                             }
                                         },
                                         VResponse.ErrorListener { error ->
@@ -503,10 +492,7 @@ class VoltSDKContainer(
                             )
 
                             intent.putExtra("platformAuthToken", platformAuthToken)
-                            startActivity(context, intent, null)
-                            VoltWebViewActivity.onExitVolt = {
-                                onExitSDK?.invoke(it)
-                            }
+                            startVoltWebViewActivity(intent)
 
                         } else {
                             val intent = Intent(context, VoltWebViewActivity::class.java)
@@ -523,10 +509,7 @@ class VoltSDKContainer(
                                 customerSSToken
                             )
                             intent.putExtra("platformAuthToken", platformAuthToken)
-                            startActivity(context, intent, null)
-                            VoltWebViewActivity.onExitVolt = {
-                                onExitSDK?.invoke(it)
-                            }
+                            startVoltWebViewActivity(intent)
                         }
                     },
                     VResponse.ErrorListener { error ->
@@ -634,10 +617,7 @@ class VoltSDKContainer(
                                     customerSSToken
                                 )
                                 intent.putExtra("platformAuthToken", platformAuthToken)
-                                startActivity(context, intent, null)
-                                VoltWebViewActivity.onExitVolt = {
-                                    onExitSDK?.invoke(it)
-                                }
+                                startVoltWebViewActivity(intent)
                             } else {
                                 val intent = Intent(context, VoltWebViewActivity::class.java)
                                 intent.putExtra("webViewUrl", webView_url)
@@ -654,10 +634,7 @@ class VoltSDKContainer(
                                     customerSSToken
                                 )
                                 intent.putExtra("platformAuthToken", platformAuthToken)
-                                startActivity(context, intent, null)
-                                VoltWebViewActivity.onExitVolt = {
-                                    onExitSDK?.invoke(it)
-                                }
+                                startVoltWebViewActivity(intent)
                             }
                         },
                         VResponse.ErrorListener { error ->
@@ -680,6 +657,7 @@ class VoltSDKContainer(
     }
 
     var webView_url: String = "$url" +
+            (if (!ref.isNullOrBlank()) "&ref=$ref" else "") +
             "&platform=$partner_platform" +
             "&primaryColor=$primary_color" +
             "&target=${target?.trim()}" +
@@ -689,6 +667,14 @@ class VoltSDKContainer(
             "&secondaryColor=$secondary_color"
 
 
+
+    private fun startVoltWebViewActivity(intent: Intent) {
+        Log.d("VoltSDK", "Generated URL: ${intent.getStringExtra("webViewUrl")}")
+        startActivity(context, intent, null)
+        VoltWebViewActivity.onExitVolt = {
+            onExitSDK?.invoke(it)
+        }
+    }
 
     private var myCallback: MyCallback? = null
 
