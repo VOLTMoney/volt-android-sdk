@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                     val customerSSOToken = binding.etSsoToken.text.toString()
                     val platformAuthToken = binding.etPlatformAuthToken.text.toString()
                     val customerCode = binding.etCustomerCode.text.toString()
+                    val ref = binding.etRef.text.toString().ifBlank { null }
 
                     if (platformAuthToken == null) {
                         Log.e("TAG", "Please enter Platform Auth Token")
@@ -95,6 +96,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                             customerCode,
                                             showHeader,
                                             "000",
+                                            ref,
                                             ::onExitSDK
                                         )
                                     }
@@ -118,6 +120,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                                 customerCode,
                                                 showHeader,
                                                 "000",
+                                                ref,
                                                 ::onExitSDK
                                             )
                                         }
@@ -145,6 +148,7 @@ class MainActivity : AppCompatActivity(), VoltAPIResponse {
                                 customerCode,
                                 showHeader,
                                 "000",
+                                ref,
                                 ::onExitSDK
                             )
 

@@ -214,6 +214,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             voltPlatformCode = intent.getStringExtra("voltPlatformCode")
             platformAuthToken = intent.getStringExtra("platformAuthToken")
             showHeader = intent.getStringExtra("showHeader")
+            Log.d("VoltSDK", "Loading WebView URL: $webUrl")
             webView.loadUrl(webUrl!!)
             toolbar.setBackgroundColor(Color.parseColor("#$primaryColor"))
             if (textColor!!.isNotEmpty()) {
@@ -257,6 +258,7 @@ class VoltWebViewActivity : AppCompatActivity() {
             Log.d("TAG", "onCreate of SDK 2")
             webUrl =
                 "https://app.staging.voltmoney.in/?ref=4CCLRP&primaryColor=FF6E31&partnerPlatform=SDK_INVESTWELL"
+            Log.d("VoltSDK", "Loading WebView URL: $webUrl")
             webView.loadUrl(webUrl!!)
 
             toolbar.setNavigationIcon(R.drawable.arrow_back)
